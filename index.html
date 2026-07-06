@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="312题库">
+    <meta name="description" content="312心理学考研题库、错题本与刷题工具">
+    <title>312心理学考研 - 题库 & 错题本</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #e0e7ff;
+            --secondary: #06b6d4;
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --success-light: #dcfce7;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger-light: #fee2e2;
+            --star: #f59e0b;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+        /* ===== Navigation ===== */
+        .topnav {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white; padding: 0; position: sticky; top: 0; z-index: 500;
+            box-shadow: var(--shadow-lg);
+        }
+        .topnav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; padding: 0 20px; }
+        .topnav .logo { padding: 16px 0; font-size: 18px; font-weight: 700; white-space: nowrap; }
+        .topnav .nav-tabs { display: flex; margin-left: 30px; height: 100%; }
+        .topnav .nav-tab {
+            padding: 18px 20px; color: rgba(255,255,255,0.75); cursor: pointer;
+            font-size: 14px; font-weight: 500; border: none; background: none;
+            border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap;
+        }
+        .topnav .nav-tab:hover { color: white; background: rgba(255,255,255,0.1); }
+        .topnav .nav-tab.active { color: white; border-bottom-color: white; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        /* ===== Stats Cards ===== */
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--surface); padding: 14px; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-card .number { font-size: 26px; font-weight: 700; color: var(--primary); }
+        .stat-card .label { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
+
+        /* ===== Toolbar ===== */
+        .toolbar { background: var(--surface); padding: 12px 16px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 14px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .toolbar input, .toolbar select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; outline: none; transition: border-color 0.2s; }
+        .toolbar input:focus, .toolbar select:focus { border-color: var(--primary); }
+        .toolbar input[type="text"] { flex: 1; min-width: 160px; }
+        .toolbar-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
+
+        /* ===== Buttons ===== */
+        .btn { padding: 8px 14px; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; font-weight: 500; white-space: nowrap; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+        /* ===== Question Cards ===== */
+        .q-list { display: grid; gap: 12px; }
+        .q-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; transition: all 0.2s; border-left: 4px solid var(--primary); }
+        .q-card:hover { box-shadow: var(--shadow-lg); }
+        .q-card.starred { border-left-color: var(--star); }
+        .q-card .q-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .q-card .q-title { font-weight: 600; font-size: 14px; flex: 1; line-height: 1.5; }
+        .q-card .q-star { font-size: 20px; cursor: pointer; color: var(--border); transition: color 0.2s; margin-left: 8px; user-select: none; }
+        .q-card .q-star.active { color: var(--star); }
+        .q-card .q-meta { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+        .badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+        .badge-subject { background: #e0e7ff; color: #4338ca; }
+        .badge-type { background: #dcfce7; color: #15803d; }
+        .badge-source { background: #fef3c7; color: #92400e; }
+        .badge-knowledge { background: #f3e8ff; color: #7c3aed; }
+        .badge-easy { background: #dcfce7; color: #15803d; }
+        .badge-medium { background: #fef3c7; color: #92400e; }
+        .badge-hard { background: #fee2e2; color: #b91c1c; }
+        .badge-review { background: #fee2e2; color: #b91c1c; }
+        .badge-mastered { background: #dcfce7; color: #15803d; }
+        .q-card .q-body { color: var(--text-secondary); font-size: 13px; margin-bottom: 8px; line-height: 1.7; }
+        .q-card .q-body strong { color: var(--text); }
+        .q-card .q-options { background: var(--bg); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 13px; line-height: 1.8; }
+        .q-card .q-options .opt { padding: 2px 0; }
+        .q-card .q-options .opt-correct { color: var(--success); font-weight: 600; }
+        .q-card .q-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; margin-bottom: 8px; }
+        .q-card .q-images img { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; cursor: pointer; transition: transform 0.2s; }
+        .q-card .q-images img:hover { transform: scale(1.05); }
+        .q-card .q-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+
+        /* ===== Empty State ===== */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .empty-state .icon { font-size: 56px; margin-bottom: 12px; }
+        .empty-state h3 { margin-bottom: 6px; color: var(--text); }
+
+        /* ===== Modal ===== */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--surface); border-radius: var(--radius); width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideUp 0.25s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface); z-index: 1; }
+        .modal-header h2 { font-size: 16px; }
+        .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-secondary); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .modal-close:hover { background: var(--bg); }
+        .modal-body { padding: 20px; }
+
+        /* ===== Form ===== */
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 13px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--primary); }
+        .form-group textarea { resize: vertical; min-height: 70px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+        .form-hint { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+
+        /* ===== Tag Input ===== */
+        .tag-input { display: flex; flex-wrap: wrap; gap: 6px; padding: 7px; border: 1px solid var(--border); border-radius: 8px; min-height: 38px; align-items: center; }
+        .tag-input input { border: none; outline: none; flex: 1; min-width: 80px; padding: 3px; font-size: 13px; }
+        .tag { background: var(--primary); color: white; padding: 3px 8px; border-radius: 20px; font-size: 11px; display: inline-flex; align-items: center; gap: 3px; }
+        .tag .remove { cursor: pointer; font-weight: bold; }
+
+        /* ===== Image Upload ===== */
+        .image-upload { border: 2px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .image-upload:hover { border-color: var(--primary); background: rgba(79,70,229,0.03); }
+        .image-upload.dragover { border-color: var(--primary); background: rgba(79,70,229,0.08); }
+        .image-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 10px; }
+        .image-preview img { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; }
+        .image-preview .img-wrap { position: relative; }
+        .image-preview .remove-img { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border: none; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+
+        /* ===== Tabs ===== */
+        .tabs { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+        .tab { padding: 7px 14px; border: none; background: none; cursor: pointer; font-size: 13px; color: var(--text-secondary); border-radius: 6px; }
+        .tab.active { background: var(--primary); color: white; }
+        .tab:hover:not(.active) { background: var(--bg); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .import-format { background: var(--bg); padding: 10px; border-radius: 8px; font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.8; }
+        .import-format code { background: white; padding: 1px 5px; border-radius: 4px; font-family: 'Courier New', monospace; }
+        .batch-area { width: 100%; min-height: 160px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 13px; resize: vertical; }
+
+        /* ===== FAB ===== */
+        .fab-wrap { position: fixed; bottom: 24px; right: 24px; display: flex; gap: 10px; z-index: 100; }
+        .fab { width: 52px; height: 52px; border-radius: 50%; background: var(--primary); color: white; border: none; font-size: 26px; cursor: pointer; box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center; }
+        .fab:hover { transform: scale(1.08); background: var(--primary-dark); }
+
+        /* ===== Toast ===== */
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: #334155; color: white; padding: 10px 22px; border-radius: 8px; font-size: 13px; z-index: 2000; opacity: 0; transition: all 0.3s; pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ===== Flashcard / Quiz Mode ===== */
+        .quiz-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 600; flex-direction: column; }
+        .quiz-overlay.active { display: flex; }
+        .quiz-topbar { background: var(--surface); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); flex-wrap: wrap; gap: 8px; }
+        .quiz-topbar .progress { font-size: 13px; color: var(--text-secondary); }
+        .quiz-topbar .progress strong { color: var(--primary); }
+        .quiz-body { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+        .flashcard { width: 100%; max-width: 620px; min-height: 280px; background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-lg); padding: 28px; cursor: pointer; transition: transform 0.3s; }
+        .flashcard:hover { transform: scale(1.01); }
+        .flashcard .fc-subject { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .flashcard .fc-type-badge { display: inline-block; font-size: 11px; margin-bottom: 12px; }
+        .flashcard .fc-question { font-size: 15px; line-height: 1.7; font-weight: 500; }
+        .flashcard .fc-options { margin-top: 16px; background: var(--bg); border-radius: 10px; padding: 12px 16px; font-size: 14px; line-height: 2; }
+        .flashcard .fc-answer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; line-height: 1.7; color: var(--text-secondary); }
+        .flashcard .fc-answer strong { color: var(--text); }
+        .flashcard .fc-knowledge { margin-top: 10px; font-size: 12px; color: #7c3aed; }
+        .flashcard .fc-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-top: 12px; }
+        .flashcard .fc-images img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer; }
+        .flashcard .fc-note { margin-top: 12px; padding: 10px; background: var(--warning-light); border-radius: 8px; font-size: 13px; }
+        .flashcard .fc-hint { text-align: center; color: var(--text-secondary); font-size: 12px; margin-top: 14px; }
+        .quiz-bottom { padding: 14px 20px; display: flex; gap: 12px; justify-content: center; align-items: center; background: var(--surface); box-shadow: 0 -1px 3px rgba(0,0,0,0.06); }
+        .quiz-bottom .btn { padding: 11px 22px; font-size: 14px; }
+        .quiz-filter-bar { background: var(--surface); padding: 8px 20px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--border); }
+
+        /* ===== Statistics ===== */
+        .stats-page { display: grid; gap: 16px; }
+        .chart-section { background: var(--surface); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+        .chart-section h3 { font-size: 15px; margin-bottom: 14px; }
+        .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+        .bar-row { display: flex; align-items: center; gap: 10px; }
+        .bar-label { width: 100px; font-size: 12px; color: var(--text-secondary); text-align: right; flex-shrink: 0; }
+        .bar-track { flex: 1; height: 26px; background: var(--bg); border-radius: 13px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 13px; transition: width 0.5s ease; display: flex; align-items: center; padding-left: 10px; }
+        .bar-fill span { font-size: 12px; color: white; font-weight: 600; }
+        .weak-list { display: grid; gap: 8px; }
+        .weak-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--bg); border-radius: 8px; font-size: 13px; }
+        .weak-item .weak-subject { font-weight: 600; width: 100px; flex-shrink: 0; font-size: 12px; }
+        .weak-item .weak-bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .weak-item .weak-bar-fill { height: 100%; border-radius: 4px; }
+        .weak-item .weak-pct { width: 60px; text-align: right; font-weight: 600; font-size: 12px; }
+
+        /* ===== Page sections ===== */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        .image-modal img { max-width: 100%; max-height: 80vh; border-radius: 8px; }
+
+        @media (max-width: 768px) {
+            .container { padding: 12px; }
+            .topnav .nav-tabs { margin-left: 10px; overflow-x: auto; }
+            .topnav .nav-tab { padding: 14px 12px; font-size: 12px; }
+            .form-row, .form-row-4 { grid-template-columns: 1fr; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar input[type="text"] { width: 100%; }
+            .toolbar-sep { display: none; }
+            .bar-label { width: 60px; font-size: 11px; }
+            .quiz-bottom .btn { padding: 10px 16px; font-size: 13px; }
+            .stats { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<nav class="topnav">
+    <div class="topnav-inner">
+        <div class="logo">312 心理学考研</div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-page="pageCollection" onclick="navTo(this)">题库</button>
+            <button class="nav-tab" data-page="pageStarred" onclick="navTo(this)">好题集</button>
+            <button class="nav-tab" data-page="pageQuiz" onclick="navTo(this)">刷题模式</button>
+            <button class="nav-tab" data-page="pageStats" onclick="navTo(this)">统计分析</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== Page: Collection ===== -->
+<div class="container page-section active" id="pageCollection">
+    <div class="stats">
+        <div class="stat-card"><div class="number" id="sTotal">0</div><div class="label">总题数</div></div>
+        <div class="stat-card"><div class="number" id="sErrors">0</div><div class="label">错题</div></div>
+        <div class="stat-card"><div class="number" id="sStarred">0</div><div class="label">好题收藏</div></div>
+        <div class="stat-card"><div class="number" id="sReview">0</div><div class="label">待复习</div></div>
+        <div class="stat-card"><div class="number" id="sMastered">0</div><div class="label">已掌握</div></div>
+    </div>
+    <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="搜索题目、选项、标签、知识点...">
+        <select id="filterSubject"><option value="">全部科目</option></select>
+        <select id="filterType">
+            <option value="">全部题型</option>
+            <option value="单选">单选题</option>
+            <option value="多选">多选题</option>
+            <option value="简答">简答题</option>
+            <option value="论述">论述题（综合）</option>
+        </select>
+        <select id="filterDifficulty">
+            <option value="">全部难度</option>
+            <option value="easy">简单</option>
+            <option value="medium">中等</option>
+            <option value="hard">困难</option>
+        </select>
+        <select id="filterMastered">
+            <option value="">全部状态</option>
+            <option value="review">待复习</option>
+            <option value="mastered">已掌握</option>
+        </select>
+        <div class="toolbar-sep"></div>
+        <button class="btn btn-secondary" onclick="showModal('batchModal')">批量导入</button>
+        <button class="btn btn-secondary" onclick="exportData()">导出备份</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">导入备份</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(this)">
+    </div>
+    <div class="q-list" id="qList"></div>
+    <div class="empty-state" id="emptyState" style="display:none">
+        <div class="icon">📝</div>
+        <h3>还没有题目</h3>
+        <p>点击右下角 + 添加第一道题，或使用「批量导入」</p>
+    </div>
+</div>
+
+<!-- ===== Page: Starred ===== -->
+<div class="container page-section" id="pageStarred">
+    <h2 style="margin-bottom:14px;font-size:18px">⭐ 好题收藏</h2>
+    <div class="toolbar">
+        <input type="text" id="starSearchInput" placeholder="搜索好题...">
+        <select id="starFilterSubject"><option value="">全部科目</option></select>
+    </div>
+    <div class="q-list" id="starList"></div>
+    <div class="empty-state" id="starEmpty" style="display:none">
+        <div class="icon">⭐</div>
+        <h3>还没有收藏好题</h3>
+        <p>在题目列表中点击星标即可收藏</p>
+    </div>
+</div>
+
+<!-- ===== Page: Quiz (overlay) ===== -->
+<div class="quiz-overlay" id="pageQuiz">
+    <div class="quiz-topbar">
+        <div class="progress">第 <strong id="quizCurrent">1</strong> / <strong id="quizTotal">0</strong> 题</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <select id="quizFilterSubject" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px"><option value="">全部科目</option></select>
+            <select id="quizFilterType" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px">
+                <option value="">全部题型</option>
+                <option value="单选">单选</option><option value="多选">多选</option><option value="简答">简答</option><option value="论述">论述</option>
+            </select>
+        </div>
+        <button class="btn btn-sm btn-danger" onclick="closeQuiz()">退出刷题</button>
+    </div>
+    <div class="quiz-filter-bar">
+        <button class="btn btn-sm btn-secondary" onclick="setQuizPool('all')" id="qpAll">全部题目</button>
+        <button class="btn btn-sm btn-secondary" onclick="setQuizPool('error')" id="qpError">仅错题</button>
+        <button class="btn btn-sm btn-secondary" onclick="setQuizPool('starred')" id="qpStarred">仅好题</button>
+        <button class="btn btn-sm btn-secondary" onclick="setQuizPool('review')" id="qpReview">待复习</button>
+        <span style="font-size:12px;color:var(--text-secondary);margin-left:6px">题池: <strong id="quizPoolCount">0</strong> 题 · 按 <kbd style="background:var(--bg);padding:1px 4px;border-radius:3px;font-size:11px">空格</kbd> 翻转 · <kbd style="background:var(--bg);padding:1px 4px;border-radius:3px;font-size:11px">1</kbd>/<kbd style="background:var(--bg);padding:1px 4px;border-radius:3px;font-size:11px">2</kbd> 掌握/没掌握</span>
+    </div>
+    <div class="quiz-body">
+        <div class="flashcard" id="flashcard" onclick="toggleFlashcard()">
+            <div class="fc-subject" id="fcSubject"></div>
+            <div class="fc-type-badge" id="fcType"></div>
+            <div class="fc-question" id="fcQuestion"></div>
+            <div id="fcOptions" style="display:none"></div>
+            <div class="fc-answer" id="fcAnswer" style="display:none"></div>
+            <div class="fc-knowledge" id="fcKnowledge" style="display:none"></div>
+            <div class="fc-images" id="fcImages" style="display:none"></div>
+            <div class="fc-note" id="fcNote" style="display:none"></div>
+            <div class="fc-hint" id="fcHint">点击卡片查看答案</div>
+        </div>
+    </div>
+    <div class="quiz-bottom">
+        <button class="btn btn-danger" onclick="quizMark(false)">没掌握</button>
+        <button class="btn btn-success" onclick="quizMark(true)">已掌握</button>
+        <button class="btn btn-warning" onclick="quizNext()">跳过</button>
+    </div>
+</div>
+
+<!-- ===== Page: Statistics ===== -->
+<div class="container page-section" id="pageStats">
+    <div class="stats-page" id="statsContent"></div>
+</div>
+
+<!-- FAB -->
+<div class="fab-wrap" id="fabWrap">
+    <button class="fab" onclick="openAddModal()" title="添加题目">+</button>
+</div>
+
+<!-- ===== Modal: Add/Edit ===== -->
+<div class="modal-overlay" id="qModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">添加题目</h2>
+            <button class="modal-close" onclick="closeModal('qModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="qForm">
+                <input type="hidden" id="qId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>科目 *</label>
+                        <select id="fSubject" required>
+                            <option value="">选择科目</option>
+                            <option value="普通心理学">普通心理学</option>
+                            <option value="发展心理学">发展心理学</option>
+                            <option value="教育心理学">教育心理学</option>
+                            <option value="实验心理学">实验心理学</option>
+                            <option value="心理统计">心理统计</option>
+                            <option value="心理测量">心理测量</option>
+                            <option value="社会心理学">社会心理学</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>题型 *</label>
+                        <select id="fType" required onchange="toggleOptionsVisibility()">
+                            <option value="">选择题型</option>
+                            <option value="单选">单选题</option>
+                            <option value="多选">多选题</option>
+                            <option value="简答">简答题</option>
+                            <option value="论述">论述题（综合）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>来源（年份/试卷）</label>
+                        <input type="text" id="fSource" placeholder="如：2024年真题">
+                    </div>
+                    <div class="form-group">
+                        <label>难度</label>
+                        <select id="fDifficulty">
+                            <option value="easy">简单</option>
+                            <option value="medium" selected>中等</option>
+                            <option value="hard">困难</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>考察知识点</label>
+                    <input type="text" id="fKnowledge" placeholder="如：知觉的特性、皮亚杰认知发展理论、t检验...">
+                </div>
+                <div class="form-group">
+                    <label>题目内容 *</label>
+                    <textarea id="fQuestion" placeholder="输入题目内容..." required></textarea>
+                </div>
+
+                <!-- 选项区（选择题专用） -->
+                <div id="optionsArea" style="display:none">
+                    <div class="form-group">
+                        <label>选项（选择题/多选题）</label>
+                        <div class="form-row-4">
+                            <div style="text-align:center;font-size:12px;color:var(--text-secondary)">A</div>
+                            <div style="text-align:center;font-size:12px;color:var(--text-secondary)">B</div>
+                            <div style="text-align:center;font-size:12px;color:var(--text-secondary)">C</div>
+                            <div style="text-align:center;font-size:12px;color:var(--text-secondary)">D</div>
+                        </div>
+                        <div class="form-row-4">
+                            <input type="text" id="optA" placeholder="选项A">
+                            <input type="text" id="optB" placeholder="选项B">
+                            <input type="text" id="optC" placeholder="选项C">
+                            <input type="text" id="optD" placeholder="选项D">
+                        </div>
+                        <div class="form-hint">在「正确答案」中填写正确选项字母，如 A 或 ACD（多选）</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>正确答案 / 解析</label>
+                    <textarea id="fAnswer" placeholder="选择题填写正确选项字母（如A、ABD）；其他题型填写完整答案和解析..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>错误原因 / 考点备注</label>
+                    <textarea id="fNote" placeholder="记录错误原因、解题思路、相关知识点..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>标签</label>
+                    <div class="tag-input" id="tagInput" onclick="document.getElementById('tagInputField').focus()">
+                        <input type="text" id="tagInputField" placeholder="输入标签按回车添加">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>图片</label>
+                    <div class="image-upload" id="imageUpload" onclick="document.getElementById('imageInput').click()">
+                        <div>📷 点击上传或拖拽图片到此处</div>
+                        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">支持 JPG、PNG（单个图片建议 &lt;2MB）</div>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                <div class="form-group" style="display:flex;gap:18px;flex-wrap:wrap">
+                    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal"><input type="checkbox" id="fStarred"> 收藏为好题</label>
+                    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal"><input type="checkbox" id="fIsError"> 标记为错题</label>
+                    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal"><input type="checkbox" id="fNeedsReview"> 待复习</label>
+                </div>
+                <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('qModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Modal: Batch Import ===== -->
+<div class="modal-overlay" id="batchModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>批量导入</h2>
+            <button class="modal-close" onclick="closeModal('batchModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab(this, 'batchText')">文本导入</button>
+                <button class="tab" onclick="switchTab(this, 'batchCsv')">CSV导入</button>
+                <button class="tab" onclick="switchTab(this, 'batchImage')">图片批量导入</button>
+            </div>
+            <div class="tab-content active" id="batchText">
+                <div class="import-format">
+                    每行一道题，用 <code>||</code> 分隔字段<br>
+                    顺序：科目 || 题型(单选/多选/简答/论述) || 来源 || 难度(easy/medium/hard) || 题目 || 答案 || 选项(A|B|C|D) || 知识点 || 备注 || 标签(逗号分隔)<br>
+                    示例：<code>普通心理学||单选||2024真题||medium||以下哪个属于知觉特性？||A||选择性|整体性|理解性|恒常性|知觉特性,经常混淆</code><br>
+                    <span style="color:#7c3aed">选项格式：用 <code>|</code> 分隔ABCD，如 <code>A选项|B选项|C选项|D选项</code></span>
+                </div>
+                <textarea class="batch-area" id="batchTextArea" placeholder="粘贴题目内容，每行一道..."></textarea>
+            </div>
+            <div class="tab-content" id="batchCsv">
+                <div class="import-format">
+                    列名：subject, type, source, difficulty, question, answer, options(A|B|C|D), knowledge, note, tags<br>
+                    <a href="#" onclick="event.preventDefault();downloadTemplate()" style="color:var(--primary)">下载CSV模板</a>
+                </div>
+                <input type="file" id="csvFile" accept=".csv" onchange="handleCsvImport(event)">
+            </div>
+            <div class="tab-content" id="batchImage">
+                <div class="import-format">
+                    选择多张图片文件，每张图片将创建一道题目。<br>
+                    图片会自动压缩存储，建议每张 &lt;2MB。<br>
+                    导入后可在编辑中补充题目内容、答案等信息。
+                </div>
+                <input type="file" id="batchImageInput" accept="image/*" multiple onchange="handleBatchImageImport(event)">
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+                <button class="btn btn-secondary" onclick="closeModal('batchModal')">取消</button>
+                <button class="btn btn-primary" onclick="processBatchImport()">导入</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Modal: Image Preview ===== -->
+<div class="modal-overlay" id="imageModal" onclick="closeModal('imageModal')">
+    <div class="modal image-modal" style="background:transparent;box-shadow:none;max-width:90vw" onclick="event.stopPropagation()">
+        <img id="previewImage" src="" alt="预览">
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== Constants ==========
+const SUBJECTS = ['普通心理学','发展心理学','教育心理学','实验心理学','心理统计','心理测量','社会心理学'];
+const TYPES = ['单选','多选','简答','论述'];
+const TYPE_MAP = {'单选':'单选题','多选':'多选题','简答':'简答题','论述':'论述题（综合）'};
+const DIFF_MAP = {easy:'简单',medium:'中等',hard:'困难'};
+const SUBJECT_COLORS = {
+    '普通心理学':'#4f46e5','发展心理学':'#06b6d4','教育心理学':'#8b5cf6',
+    '实验心理学':'#ec4899','心理统计':'#f59e0b','心理测量':'#10b981','社会心理学':'#ef4444'
+};
+
+// ========== DB ==========
+const DB_NAME = 'QBank312';
+const STORE = 'questions';
+let db = null, questions = [], currentImages = [], currentTags = [];
+
+function initDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 3);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => { db = req.result; resolve(); };
+        req.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
+        };
+    });
+}
+async function loadAll() {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE, 'readonly');
+        const req = tx.objectStore(STORE).getAll();
+        req.onsuccess = e => { questions = e.target.result.sort((a,b) => b.createdAt - a.createdAt); resolve(); };
+        req.onerror = () => reject(req.error);
+        tx.onerror = () => reject(tx.error);
+    });
+}
+async function saveQ(q) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE, 'readwrite');
+        const req = q.id ? tx.objectStore(STORE).put(q) : tx.objectStore(STORE).add(q);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+        tx.onerror = () => reject(tx.error);
+    });
+}
+async function deleteQ(id) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE, 'readwrite');
+        const req = tx.objectStore(STORE).delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+// ========== Page Navigation ==========
+function navTo(tab) {
+    const pageId = tab.dataset.page;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    // Hide all page-sections and quiz overlay
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    document.getElementById('pageQuiz').classList.remove('active');
+    if (pageId === 'pageQuiz') {
+        document.getElementById('pageQuiz').classList.add('active');
+        initQuiz();
+    } else {
+        document.getElementById(pageId).classList.add('active');
+        if (pageId === 'pageStarred') renderStarred();
+        if (pageId === 'pageStats') renderStats();
+    }
+    document.getElementById('fabWrap').style.display = pageId === 'pageQuiz' ? 'none' : 'flex';
+}
+
+function closeQuiz() {
+    document.getElementById('pageQuiz').classList.remove('active');
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    document.getElementById('pageCollection').classList.add('active');
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.nav-tab[data-page="pageCollection"]').classList.add('active');
+    document.getElementById('fabWrap').style.display = 'flex';
+    renderCollection();
+}
+
+// ========== Options visibility ==========
+function toggleOptionsVisibility() {
+    const t = document.getElementById('fType').value;
+    document.getElementById('optionsArea').style.display = (t === '单选' || t === '多选') ? 'block' : 'none';
+}
+
+// ========== Render Collection ==========
+function renderCollection() {
+    try {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const subj = document.getElementById('filterSubject').value;
+        const type = document.getElementById('filterType').value;
+        const diff = document.getElementById('filterDifficulty').value;
+        const master = document.getElementById('filterMastered').value;
+        let list = questions.filter(q => {
+            if (search) {
+                const haystack = [q.question, q.answer, q.note, q.knowledge, q.options, q.tags].filter(Boolean).join(' ').toLowerCase();
+                if (!haystack.includes(search)) return false;
+            }
+            if (subj && q.subject !== subj) return false;
+            if (type && q.type !== type) return false;
+            if (diff && q.difficulty !== diff) return false;
+            if (master === 'review' && q.mastered) return false;
+            if (master === 'mastered' && !q.mastered) return false;
+            return true;
+        });
+        updateStats(); updateSubjectFilters();
+        const el = document.getElementById('qList');
+        const empty = document.getElementById('emptyState');
+        if (!list.length) { el.innerHTML = ''; empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+        el.innerHTML = list.map(q => {
+            try { return cardHtml(q); } catch(e) { console.error('卡片渲染失败:', e, q); return `<div class="q-card" style="border-left-color:var(--danger)"><div class="q-title">⚠️ 该题目数据异常，请删除后重新添加</div><div class="q-actions"><button class="btn btn-sm btn-danger" onclick="confirmDel(${q.id})">删除</button></div></div>`; }
+        }).join('');
+    } catch(err) {
+        console.error('renderCollection 错误:', err);
+        document.getElementById('qList').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h3>渲染出错</h3><p>请刷新页面重试，或检查控制台错误信息</p></div>';
+    }
+}
+
+function cardHtml(q) {
+    const color = SUBJECT_COLORS[q.subject] || 'var(--primary)';
+    let optionsHtml = '';
+    if (q.options && (q.type === '单选' || q.type === '多选')) {
+        const opts = parseOptions(q.options);
+        const correctLetters = (q.answer || '').trim().toUpperCase().split('').filter(c => 'ABCD'.includes(c));
+        optionsHtml = `<div class="q-options">${opts.map((o, i) => {
+            const letter = 'ABCD'[i];
+            const isCorrect = correctLetters.includes(letter);
+            return `<div class="opt ${isCorrect?'opt-correct':''}">${letter}. ${esc(o)}</div>`;
+        }).join('')}</div>`;
+    }
+    return `
+    <div class="q-card ${q.starred?'starred':''}" style="border-left-color:${color}">
+        <div class="q-header">
+            <div class="q-title">${esc(q.question?.substring(0,150)||'无题目')}${q.question?.length>150?'...':''}</div>
+            <span class="q-star ${q.starred?'active':''}" onclick="event.stopPropagation();toggleStar(${q.id})">${q.starred?'★':'☆'}</span>
+        </div>
+        <div class="q-meta">
+            ${q.subject?`<span class="badge badge-subject">${esc(q.subject)}</span>`:''}
+            ${q.type?`<span class="badge badge-type">${esc(TYPE_MAP[q.type]||q.type)}</span>`:''}
+            ${q.source?`<span class="badge badge-source">${esc(q.source)}</span>`:''}
+            ${q.difficulty?`<span class="badge badge-${q.difficulty}">${DIFF_MAP[q.difficulty]||q.difficulty}</span>`:''}
+            ${q.knowledge?`<span class="badge badge-knowledge">📌 ${esc(q.knowledge)}</span>`:''}
+            ${q.isError?'<span class="badge badge-review">错题</span>':''}
+            ${q.mastered?'<span class="badge badge-mastered">已掌握</span>':''}
+            ${q.needsReview&&!q.mastered?'<span class="badge badge-review">待复习</span>':''}
+        </div>
+        ${optionsHtml}
+        <div class="q-body">
+            ${q.answer?`<div><strong>答案：</strong>${esc(q.answer).replace(/\n/g,'<br>')}</div>`:''}
+            ${q.note?`<div style="margin-top:6px"><strong>备注：</strong>${esc(q.note).replace(/\n/g,'<br>')}</div>`:''}
+        </div>
+        ${q.images?.length?`<div class="q-images">${q.images.map(i=>`<img src="${i}" onclick="showImg(this.src)">`).join('')}</div>`:''}
+        ${q.tags?.length?`<div style="margin-bottom:8px">${q.tags.map(t=>`<span class="badge" style="background:var(--bg);color:var(--text-secondary)">${esc(t)}</span>`).join('')}</div>`:''}
+        <div class="q-actions">
+            ${!q.mastered?`<button class="btn btn-sm btn-success" onclick="markMastered(${q.id})">掌握</button>`:`<button class="btn btn-sm btn-secondary" onclick="unmarkMastered(${q.id})">取消掌握</button>`}
+            <button class="btn btn-sm btn-secondary" onclick="editQ(${q.id})">编辑</button>
+            <button class="btn btn-sm btn-danger" onclick="confirmDel(${q.id})">删除</button>
+        </div>
+    </div>`;
+}
+
+function parseOptions(optionsStr) {
+    if (!optionsStr) return [];
+    if (typeof optionsStr === 'object' && Array.isArray(optionsStr)) return optionsStr;
+    // 支持用 | 分隔
+    if (optionsStr.includes('|')) return optionsStr.split('|').map(s => s.trim()).filter(Boolean);
+    // 支持ABCD. 开头格式
+    if (/[A-D][.、]/.test(optionsStr)) {
+        return optionsStr.split(/(?=[A-D][.、])/).map(s => s.replace(/^[A-D][.、]/, '').trim()).filter(Boolean);
+    }
+    return [optionsStr];
+}
+
+function updateStats() {
+    document.getElementById('sTotal').textContent = questions.length;
+    document.getElementById('sErrors').textContent = questions.filter(q=>q.isError).length;
+    document.getElementById('sStarred').textContent = questions.filter(q=>q.starred).length;
+    document.getElementById('sReview').textContent = questions.filter(q=>q.needsReview&&!q.mastered).length;
+    document.getElementById('sMastered').textContent = questions.filter(q=>q.mastered).length;
+}
+function updateSubjectFilters() {
+    const subs = [...new Set(questions.map(q=>q.subject).filter(Boolean))];
+    ['filterSubject','starFilterSubject','quizFilterSubject'].forEach(id => {
+        const el = document.getElementById(id); if(!el) return;
+        const v = el.value;
+        el.innerHTML = '<option value="">全部科目</option>' + subs.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
+        // 只在值仍存在于选项中时才恢复，避免触发不必要的 input 事件
+        if (v === '' || subs.includes(v)) el.value = v;
+    });
+}
+
+// ========== Starred Page ==========
+function renderStarred() {
+    try {
+        const search = document.getElementById('starSearchInput').value.toLowerCase();
+        const subj = document.getElementById('starFilterSubject').value;
+        let list = questions.filter(q => q.starred && (!search || [q.question,q.knowledge,q.tags].filter(Boolean).join(' ').toLowerCase().includes(search)) && (!subj || q.subject===subj));
+        const el = document.getElementById('starList');
+        const empty = document.getElementById('starEmpty');
+        if (!list.length) { el.innerHTML=''; empty.style.display='block'; return; }
+        empty.style.display='none';
+        el.innerHTML = list.map(q => cardHtml(q)).join('');
+    } catch(err) {
+        console.error('renderStarred 错误:', err);
+        document.getElementById('starList').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h3>渲染出错</h3></div>';
+    }
+}
+
+// ========== CRUD ==========
+function openAddModal() {
+    document.getElementById('qForm').reset();
+    document.getElementById('qId').value='';
+    document.getElementById('modalTitle').textContent='添加题目';
+    document.getElementById('fDifficulty').value='medium';
+    document.getElementById('optionsArea').style.display='none';
+    currentImages=[]; currentTags=[];
+    renderTags(); renderImagePreview();
+    showModal('qModal');
+}
+
+async function editQ(id) {
+    const q = questions.find(x=>x.id===id); if(!q)return;
+    document.getElementById('qId').value=q.id;
+    document.getElementById('fSubject').value=q.subject||'';
+    document.getElementById('fType').value=q.type||'';
+    document.getElementById('fSource').value=q.source||'';
+    document.getElementById('fDifficulty').value=q.difficulty||'medium';
+    document.getElementById('fKnowledge').value=q.knowledge||'';
+    document.getElementById('fQuestion').value=q.question||'';
+    document.getElementById('fAnswer').value=q.answer||'';
+    document.getElementById('fNote').value=q.note||'';
+    document.getElementById('fStarred').checked=q.starred||false;
+    document.getElementById('fIsError').checked=q.isError||false;
+    document.getElementById('fNeedsReview').checked=q.needsReview||false;
+    // Options
+    toggleOptionsVisibility();
+    if (q.options && (q.type==='单选'||q.type==='多选')) {
+        const opts = parseOptions(q.options);
+        document.getElementById('optA').value = opts[0]||'';
+        document.getElementById('optB').value = opts[1]||'';
+        document.getElementById('optC').value = opts[2]||'';
+        document.getElementById('optD').value = opts[3]||'';
+    } else {
+        document.getElementById('optA').value='';document.getElementById('optB').value='';
+        document.getElementById('optC').value='';document.getElementById('optD').value='';
+    }
+    currentImages=q.images||[]; currentTags=q.tags||[];
+    renderTags(); renderImagePreview();
+    document.getElementById('modalTitle').textContent='编辑题目';
+    showModal('qModal');
+}
+
+async function confirmDel(id) {
+    if(!confirm('确定删除？')) return;
+    try {
+        await deleteQ(id);
+        await loadAll();
+        renderCollection();
+        toast('已删除');
+    } catch(err) {
+        console.error('删除失败:', err);
+        toast('删除失败: ' + (err.message || '未知错误'));
+    }
+}
+async function toggleStar(id) {
+    try {
+        const q=questions.find(x=>x.id===id); if(!q)return;
+        q.starred=!q.starred; await saveQ(q); await loadAll();
+        renderCollection(); if(document.getElementById('pageStarred').classList.contains('active')) renderStarred();
+        toast(q.starred?'已收藏':'已取消收藏');
+    } catch(err) { console.error('toggleStar 错误:', err); toast('操作失败'); }
+}
+async function markMastered(id) {
+    try {
+        const q=questions.find(x=>x.id===id); if(!q)return; q.mastered=true; q.needsReview=false; await saveQ(q); await loadAll(); renderCollection(); toast('已标记掌握');
+    } catch(err) { console.error('markMastered 错误:', err); toast('操作失败'); }
+}
+async function unmarkMastered(id) {
+    try {
+        const q=questions.find(x=>x.id===id); if(!q)return; q.mastered=false; await saveQ(q); await loadAll(); renderCollection(); toast('已取消掌握');
+    } catch(err) { console.error('unmarkMastered 错误:', err); toast('操作失败'); }
+}
+
+document.getElementById('qForm').addEventListener('submit', async(e) => {
+    e.preventDefault();
+    const id = document.getElementById('qId').value;
+    const type = document.getElementById('fType').value;
+    // Build options string
+    let options = '';
+    if (type === '单选' || type === '多选') {
+        const a=document.getElementById('optA').value.trim(), b=document.getElementById('optB').value.trim();
+        const c=document.getElementById('optC').value.trim(), d=document.getElementById('optD').value.trim();
+        if (a||b||c||d) options = [a,b,c,d].join('|');
+    }
+    const q = {
+        subject: document.getElementById('fSubject').value,
+        type: type,
+        source: document.getElementById('fSource').value,
+        difficulty: document.getElementById('fDifficulty').value,
+        knowledge: document.getElementById('fKnowledge').value.trim(),
+        question: document.getElementById('fQuestion').value,
+        answer: document.getElementById('fAnswer').value,
+        note: document.getElementById('fNote').value,
+        options: options,
+        starred: document.getElementById('fStarred').checked,
+        isError: document.getElementById('fIsError').checked,
+        needsReview: document.getElementById('fNeedsReview').checked,
+        tags: [...currentTags], images: [...currentImages],
+        updatedAt: Date.now()
+    };
+    if (id) { q.id=parseInt(id); } else { q.createdAt=Date.now(); q.mastered=false; }
+    await saveQ(q); await loadAll(); renderCollection();
+    closeModal('qModal'); toast(id?'已更新':'已添加');
+});
+
+// ========== Tags ==========
+function setupTagListener() {
+    const el = document.getElementById('tagInputField');
+    if (!el) return;
+    el.addEventListener('keydown', (e) => {
+        if (e.key==='Enter') { e.preventDefault(); const v=e.target.value.trim(); if(v&&!currentTags.includes(v)){currentTags.push(v);e.target.value='';renderTags();} }
+        if (e.key==='Backspace'&&!e.target.value&&currentTags.length){currentTags.pop();renderTags();}
+    });
+}
+function renderTags() {
+    document.getElementById('tagInput').innerHTML = currentTags.map(t=>`<span class="tag">${esc(t)}<span class="remove" onclick="event.stopPropagation();removeTag('${esc(t)}')">&times;</span></span>`).join('')+'<input type="text" id="tagInputField" placeholder="输入标签按回车添加">';
+    setupTagListener();
+}
+function removeTag(t) { currentTags=currentTags.filter(x=>x!==t); renderTags(); }
+
+// ========== Images ==========
+function handleImageSelect(event) {
+    Array.from(event.target.files).forEach(f => { compressImage(f, 1200, 0.7).then(data => { currentImages.push(data); renderImagePreview(); }); });
+    event.target.value='';
+}
+function compressImage(file, maxW, quality) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if (w > maxW) { h = h * maxW / w; w = maxW; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+function renderImagePreview() {
+    document.getElementById('imagePreview').innerHTML = currentImages.map((img,i)=>`<div class="img-wrap"><img src="${img}"><button class="remove-img" onclick="removeImage(${i})">&times;</button></div>`).join('');
+}
+function removeImage(i) { currentImages.splice(i,1); renderImagePreview(); }
+function showImg(src) { document.getElementById('previewImage').src=src; showModal('imageModal'); }
+
+const ua = document.getElementById('imageUpload');
+ua.addEventListener('dragover',(e)=>{e.preventDefault();ua.classList.add('dragover');});
+ua.addEventListener('dragleave',()=>ua.classList.remove('dragover'));
+ua.addEventListener('drop',(e)=>{e.preventDefault();ua.classList.remove('dragover');Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')).forEach(f=>{compressImage(f,1200,0.7).then(data=>{currentImages.push(data);renderImagePreview();});});});
+
+// ========== Batch Import ==========
+function switchTab(tab, id) {
+    tab.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.closest('.modal-body').querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    tab.classList.add('active'); document.getElementById(id).classList.add('active');
+}
+async function processBatchImport() {
+    const active = document.querySelector('#batchModal .tab-content.active');
+    if (active.id === 'batchText') {
+        const text = document.getElementById('batchTextArea').value.trim();
+        if (!text) return toast('请输入内容');
+        const lines = text.split('\n').filter(l=>l.trim());
+        let count=0;
+        for (const line of lines) {
+            const p = line.split('||').map(s=>s.trim());
+            if (p.length<2) continue;
+            await saveQ({
+                subject:p[0]||'其他', type:p[1]||'单选', source:p[2]||'', difficulty:p[3]||'medium',
+                question:p[4]||p[0], answer:p[5]||'', options:p[6]||'', knowledge:p[7]||'',
+                note:p[8]||'', tags:p[9]?p[9].split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],
+                images:[], starred:false, isError:true, needsReview:true, mastered:false,
+                createdAt:Date.now(), updatedAt:Date.now()
+            });
+            count++;
+        }
+        await loadAll(); renderCollection(); closeModal('batchModal'); toast(`导入 ${count} 题`);
+        document.getElementById('batchTextArea').value='';
+    }
+}
+
+function handleCsvImport(event) {
+    const f=event.target.files[0]; if(!f)return;
+    const r=new FileReader();
+    r.onload=async(e)=>{
+        const lines=e.target.result.split('\n').filter(l=>l.trim());
+        const h=lines[0].split(',').map(s=>s.trim().toLowerCase());
+        let c=0;
+        for(let i=1;i<lines.length;i++){
+            const v=lines[i].split(',').map(s=>s.trim());
+            const g=n=>v[h.indexOf(n)]||'';
+            if(g('question')){
+                await saveQ({
+                    subject:g('subject')||'其他', type:g('type')||'单选', source:g('source')||'',
+                    difficulty:g('difficulty')||'medium', question:g('question'), answer:g('answer')||'',
+                    options:g('options')||'', knowledge:g('knowledge')||'', note:g('note')||'',
+                    tags:g('tags')?g('tags').split(/[,，;]/).map(t=>t.trim()).filter(Boolean):[],
+                    images:[], starred:false, isError:true, needsReview:true, mastered:false,
+                    createdAt:Date.now(), updatedAt:Date.now()
+                }); c++;
+            }
+        }
+        await loadAll(); renderCollection(); closeModal('batchModal'); toast(`导入 ${c} 题`);
+    };
+    r.readAsText(f); event.target.value='';
+}
+
+async function handleBatchImageImport(event) {
+    const files = Array.from(event.target.files).filter(f=>f.type.startsWith('image/'));
+    if (!files.length) return toast('请选择图片');
+    let count = 0;
+    for (const f of files) {
+        const data = await compressImage(f, 1200, 0.7);
+        await saveQ({
+            subject:'', type:'简答', source:'', difficulty:'medium',
+            question:'[图片题目 - 请编辑补充内容]', answer:'', note:'',
+            tags:[], options:'', knowledge:'', images:[data],
+            starred:false, isError:true, needsReview:true, mastered:false,
+            createdAt:Date.now(), updatedAt:Date.now()
+        });
+        count++;
+    }
+    await loadAll(); renderCollection(); closeModal('batchModal');
+    toast(`已导入 ${count} 张图片，请编辑补充题目内容`);
+    event.target.value='';
+}
+
+function downloadTemplate() {
+    const csv='subject,type,source,difficulty,question,answer,options(A|B|C|D),knowledge,note,tags\n普通心理学,单选,2024真题,medium,以下属于知觉特性的是？,A,选择性|整体性|理解性|恒常性,知觉的特性,经常和感觉混淆,知觉;特性\n发展心理学,简答,2023真题,medium,皮亚杰认知发展阶段,感知运动阶段;前运算阶段;具体运算阶段;形式运算阶段,,皮亚杰;认知发展,需补充完整,认知发展;皮亚杰\n';
+    const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='312导入模板.csv';a.click();
+}
+
+// ========== Export / Import ==========
+function exportData() {
+    const blob=new Blob([JSON.stringify(questions,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`312题库备份_${new Date().toLocaleDateString().replace(/\//g,'-')}.json`;a.click();toast('备份已下载（含图片数据）');
+}
+async function importBackup(input) {
+    const f=input.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=async(e)=>{
+        try{
+            const d=JSON.parse(e.target.result);if(!Array.isArray(d))throw 0;
+            if(!confirm(`导入 ${d.length} 条记录？将合并到现有数据。`))return;
+            for(const item of d){delete item.id;item.createdAt=item.createdAt||Date.now();item.updatedAt=Date.now();await saveQ(item);}
+            await loadAll();renderCollection();toast(`导入 ${d.length} 条`);
+        }catch(err){toast('导入失败，请检查文件格式');}
+    };
+    r.readAsText(f);input.value='';
+}
+
+// ========== Quiz ==========
+let quizPool=[], quizIndex=0, quizRevealed=false, currentQuizPoolType='all';
+
+function setQuizPool(type) {
+    currentQuizPoolType=type;
+    document.querySelectorAll('[id^="qp"]').forEach(b=>b.className='btn btn-sm btn-secondary');
+    const btn=document.getElementById('qp'+type.charAt(0).toUpperCase()+type.slice(1));
+    if(btn) btn.className='btn btn-sm btn-primary';
+    quizIndex=0; quizRevealed=false;
+    buildQuizPool(); showQuizCard();
+}
+function buildQuizPool() {
+    const subj=document.getElementById('quizFilterSubject').value;
+    const type=document.getElementById('quizFilterType').value;
+    quizPool=questions.filter(q=>{
+        if(subj&&q.subject!==subj)return false;
+        if(type&&q.type!==type)return false;
+        if(currentQuizPoolType==='error')return q.isError;
+        if(currentQuizPoolType==='starred')return q.starred;
+        if(currentQuizPoolType==='review')return q.needsReview&&!q.mastered;
+        return true;
+    });
+    document.getElementById('quizPoolCount').textContent=quizPool.length;
+    document.getElementById('quizTotal').textContent=quizPool.length;
+}
+
+function showQuizCard() {
+    if(!quizPool.length){
+        document.getElementById('fcQuestion').innerHTML='<div style="text-align:center;color:var(--text-secondary);padding:40px">当前题池为空，请调整筛选或先添加题目</div>';
+        ['fcSubject','fcType','fcAnswer','fcOptions','fcImages','fcNote','fcKnowledge'].forEach(id=>{document.getElementById(id).style.display='none';document.getElementById(id).textContent='';});
+        document.getElementById('fcHint').textContent=''; return;
+    }
+    if(quizIndex>=quizPool.length)quizIndex=0;
+    const q=quizPool[quizIndex];
+    document.getElementById('quizCurrent').textContent=quizIndex+1;
+    document.getElementById('fcSubject').textContent=q.subject+(q.source?' · '+q.source:'');
+    document.getElementById('fcType').innerHTML=`<span class="badge badge-type">${esc(TYPE_MAP[q.type]||q.type)}</span> ${q.difficulty?`<span class="badge badge-${q.difficulty}">${DIFF_MAP[q.difficulty]}</span>`:''} ${q.isError?'<span class="badge badge-review">错题</span>':''} ${q.mastered?'<span class="badge badge-mastered">已掌握</span>':''}`;
+    document.getElementById('fcQuestion').textContent=q.question;
+    // Options (show before reveal for selection questions)
+    const fcOpt = document.getElementById('fcOptions');
+    if (q.options && (q.type==='单选'||q.type==='多选')) {
+        const opts = parseOptions(q.options);
+        fcOpt.style.display='block'; fcOpt.className='fc-options';
+        fcOpt.innerHTML = opts.map((o,i)=>`<div>${'ABCD'[i]}. ${esc(o)}</div>`).join('');
+    } else { fcOpt.style.display='none'; }
+    // Answer
+    document.getElementById('fcAnswer').style.display='none';
+    let ansHtml = q.answer ? `<strong>答案：</strong>${esc(q.answer).replace(/\n/g,'<br>')}` : '暂无答案';
+    // After reveal, show correct options highlighted
+    if (q.options && (q.type==='单选'||q.type==='多选')) {
+        const opts = parseOptions(q.options);
+        const correctLetters = (q.answer||'').trim().toUpperCase().split('').filter(c=>'ABCD'.includes(c));
+        ansHtml += '<div style="margin-top:8px">' + opts.map((o,i)=>{
+            const l='ABCD'[i]; return `<div style="${correctLetters.includes(l)?'color:var(--success);font-weight:600':''}">${l}. ${esc(o)}</div>`;
+        }).join('') + '</div>';
+    }
+    document.getElementById('fcAnswer').innerHTML=ansHtml;
+    // Knowledge
+    const fcK=document.getElementById('fcKnowledge');
+    if(q.knowledge){fcK.style.display='block';fcK.innerHTML='📌 考点：'+esc(q.knowledge);}else{fcK.style.display='none';}
+    // Images
+    const fcImg=document.getElementById('fcImages');
+    if(q.images?.length){fcImg.style.display='grid';fcImg.innerHTML=q.images.map(i=>`<img src="${i}" onclick="event.stopPropagation();showImg('${i}')">`).join('');}else{fcImg.style.display='none';}
+    // Note
+    const fcNote=document.getElementById('fcNote');
+    if(q.note){fcNote.style.display='block';fcNote.innerHTML='<strong>备注：</strong>'+esc(q.note).replace(/\n/g,'<br>');}else{fcNote.style.display='none';}
+    document.getElementById('fcHint').textContent='点击卡片查看答案';
+    quizRevealed=false;
+}
+
+function toggleFlashcard() {
+    quizRevealed=!quizRevealed;
+    document.getElementById('fcAnswer').style.display=quizRevealed?'block':'none';
+    document.getElementById('fcKnowledge').style.display=(quizRevealed&&quizPool[quizIndex]?.knowledge)?'block':'none';
+    document.getElementById('fcNote').style.display=(quizRevealed&&quizPool[quizIndex]?.note)?'block':'none';
+    // After reveal, re-render options with correct highlighted
+    if (quizRevealed && quizPool[quizIndex]) {
+        const q = quizPool[quizIndex];
+        if (q.options && (q.type==='单选'||q.type==='多选')) {
+            const opts = parseOptions(q.options);
+            const correctLetters = (q.answer||'').trim().toUpperCase().split('').filter(c=>'ABCD'.includes(c));
+            const fcOpt = document.getElementById('fcOptions');
+            fcOpt.innerHTML = opts.map((o,i)=>{
+                const l='ABCD'[i]; return `<div style="${correctLetters.includes(l)?'color:var(--success);font-weight:600':''}">${l}. ${esc(o)}</div>`;
+            }).join('');
+        }
+    }
+    document.getElementById('fcHint').textContent=quizRevealed?'点击收起':'点击查看答案';
+}
+
+function quizNext() { quizIndex++; quizRevealed=false; showQuizCard(); }
+async function quizMark(mastered) {
+    if(!quizPool.length) return;
+    const q=questions.find(x=>x.id===quizPool[quizIndex].id);
+    if(q){
+        q.mastered=mastered;
+        q.needsReview=!mastered;
+        await saveQ(q);
+        await loadAll();
+    }
+    // 从题池中移除当前已复习的题目
+    quizPool.splice(quizIndex, 1);
+    // 更新题池计数
+    document.getElementById('quizPoolCount').textContent=quizPool.length;
+    document.getElementById('quizTotal').textContent=quizPool.length;
+    if(!quizPool.length){quizRevealed=false;showQuizCard();return;}
+    if(quizIndex>=quizPool.length)quizIndex=0;
+    quizRevealed=false;
+    showQuizCard();
+}
+function initQuiz() { buildQuizPool(); showQuizCard(); }
+
+// ========== Statistics ==========
+function renderStats() {
+    const c = document.getElementById('statsContent');
+    const total = questions.length;
+    if (!total) { c.innerHTML='<div class="empty-state"><div class="icon">📊</div><h3>暂无数据</h3><p>添加题目后即可查看统计分析</p></div>'; return; }
+    const subCount={}; SUBJECTS.forEach(s=>subCount[s]=0);
+    questions.forEach(q=>{if(q.subject) subCount[q.subject]=(subCount[q.subject]||0)+1;});
+    const maxSub=Math.max(...Object.values(subCount),1);
+    const typeCount={}; TYPES.forEach(t=>typeCount[t]=0);
+    questions.forEach(q=>{if(q.type) typeCount[q.type]=(typeCount[q.type]||0)+1;});
+    const diffCount={easy:0,medium:0,hard:0};
+    questions.forEach(q=>{if(q.difficulty) diffCount[q.difficulty]++;});
+    const mastered=questions.filter(q=>q.mastered).length;
+    const masteredPct=Math.round(mastered/total*100);
+    const subError={}, subTotal={};
+    questions.forEach(q=>{if(q.subject){subTotal[q.subject]=(subTotal[q.subject]||0)+1;if(q.isError) subError[q.subject]=(subError[q.subject]||0)+1;}});
+    const weekAgo=Date.now()-7*24*3600*1000;
+    const weekNew=questions.filter(q=>q.createdAt>weekAgo).length;
+    // Knowledge points
+    const knowCounts={};
+    questions.forEach(q=>{if(q.knowledge){q.knowledge.split(/[,，;；]/).map(k=>k.trim()).filter(Boolean).forEach(k=>{knowCounts[k]=(knowCounts[k]||0)+1;});}});
+    const topKnowledge=Object.entries(knowCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+    c.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">
+        <div class="stat-card"><div class="number">${total}</div><div class="label">总题数</div></div>
+        <div class="stat-card"><div class="number">${questions.filter(q=>q.isError).length}</div><div class="label">错题数</div></div>
+        <div class="stat-card"><div class="number" style="color:var(--success)">${masteredPct}%</div><div class="label">掌握率</div></div>
+        <div class="stat-card"><div class="number" style="color:var(--warning)">${weekNew}</div><div class="label">本周新增</div></div>
+        <div class="stat-card"><div class="number" style="color:var(--star)">${questions.filter(q=>q.starred).length}</div><div class="label">好题收藏</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="chart-section"><h3>各科目题量</h3><div class="bar-chart">${SUBJECTS.filter(s=>subCount[s]>0).map(s=>`<div class="bar-row"><div class="bar-label">${s.replace('心理学','')}</div><div class="bar-track"><div class="bar-fill" style="width:${subCount[s]/maxSub*100}%;background:${SUBJECT_COLORS[s]}"><span>${subCount[s]}</span></div></div></div>`).join('')}</div></div>
+        <div class="chart-section"><h3>题型分布</h3><div class="bar-chart">${TYPES.filter(t=>typeCount[t]>0).map(t=>`<div class="bar-row"><div class="bar-label">${TYPE_MAP[t]}</div><div class="bar-track"><div class="bar-fill" style="width:${typeCount[t]/Math.max(...Object.values(typeCount),1)*100}%;background:var(--secondary)"><span>${typeCount[t]}</span></div></div></div>`).join('')}</div></div>
+        <div class="chart-section"><h3>难度分布</h3><div style="display:flex;gap:20px;justify-content:center;align-items:flex-end;padding:16px 0"><div style="text-align:center"><div style="font-size:32px;font-weight:700;color:#15803d">${diffCount.easy}</div><div style="font-size:12px;color:var(--text-secondary)">简单</div></div><div style="text-align:center"><div style="font-size:32px;font-weight:700;color:#92400e">${diffCount.medium}</div><div style="font-size:12px;color:var(--text-secondary)">中等</div></div><div style="text-align:center"><div style="font-size:32px;font-weight:700;color:#b91c1c">${diffCount.hard}</div><div style="font-size:12px;color:var(--text-secondary)">困难</div></div></div></div>
+        <div class="chart-section"><h3>掌握情况</h3><div style="display:flex;justify-content:center;padding:16px 0"><div style="width:130px;height:130px;border-radius:50%;background:conic-gradient(var(--success) 0% ${masteredPct}%,var(--border) ${masteredPct}% 100%);display:flex;align-items:center;justify-content:center"><div style="width:90px;height:90px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--success)">${masteredPct}%</div></div></div><div style="text-align:center;margin-top:10px;font-size:12px;color:var(--text-secondary)">已掌握 ${mastered}/${total}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="chart-section"><h3>错题集中科目</h3><div class="weak-list">${Object.entries(subError).sort((a,b)=>(b[1]/(subTotal[b[0]]||1))-(a[1]/(subTotal[a[0]]||1))).filter(([s])=>subTotal[s]>0).map(([s,err])=>{const pct=Math.round(err/(subTotal[s])*100);const color=pct>50?'var(--danger)':pct>25?'var(--warning)':'var(--success)';return`<div class="weak-item"><div class="weak-subject">${s}</div><div class="weak-bar-track"><div class="weak-bar-fill" style="width:${pct}%;background:${color}"></div></div><div class="weak-pct" style="color:${color}">${err}/${subTotal[s]} ${pct}%</div></div>`;}).join('')||'<div style="text-align:center;color:var(--text-secondary);padding:16px">暂无错题</div>'}</div></div>
+        <div class="chart-section"><h3>高频知识点</h3><div class="weak-list">${topKnowledge.map(([k,c])=>`<div class="weak-item"><div class="weak-subject" style="width:auto;flex:1">${esc(k)}</div><div class="weak-pct" style="width:40px">${c}题</div></div>`).join('')||'<div style="text-align:center;color:var(--text-secondary);padding:16px">暂无知识点数据</div>'}</div></div>
+    </div>`;
+}
+
+// ========== Utility ==========
+function showModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow=''; }
+function toast(msg) { const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500); }
+function esc(t) { if(!t)return''; const d=document.createElement('div');d.textContent=t;return d.innerHTML; }
+
+// Event listeners
+['searchInput','filterSubject','filterType','filterDifficulty','filterMastered'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', renderCollection);
+});
+document.getElementById('starSearchInput').addEventListener('input', renderStarred);
+document.getElementById('starFilterSubject').addEventListener('input', renderStarred);
+document.getElementById('quizFilterSubject').addEventListener('change', ()=>{quizIndex=0;buildQuizPool();showQuizCard();});
+document.getElementById('quizFilterType').addEventListener('change', ()=>{quizIndex=0;buildQuizPool();showQuizCard();});
+document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',(e)=>{if(e.target===el)closeModal(el.id);});});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    if(!document.getElementById('pageQuiz').classList.contains('active')) return;
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return;
+    if(e.key===' '){e.preventDefault();toggleFlashcard();}
+    if(e.key==='ArrowRight')quizNext();
+    if(e.key==='1')quizMark(true);
+    if(e.key==='2')quizMark(false);
+});
+
+// ========== PWA / Install ==========
+let deferredPrompt = null;
+function setupPWA() {
+    // 动态创建 manifest
+    const manifest = {
+        name: '312心理学考研题库',
+        short_name: '312题库',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#f1f5f9',
+        theme_color: '#4f46e5',
+        icons: [
+            { src: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 192 192\'%3E%3Crect width=\'192\' height=\'192\' fill=\'%234f46e5\' rx=\'24\'/%3E%3Ctext x=\'96\' y=\'120\' text-anchor=\'middle\' fill=\'white\' font-size=\'72\' font-family=\'Arial\' font-weight=\'bold\'%3E312%3C/text%3E%3C/svg%3E', sizes: '192x192', type: 'image/svg+xml' }
+        ]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = manifestURL;
+    document.head.appendChild(link);
+
+    // Service Worker（仅 https/localhost，file:// 会静默失败不影响使用）
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            self.addEventListener('install', e => {
+                e.waitUntil(caches.open('qbank-v1').then(c => c.addAll(['./'])));
+                self.skipWaiting();
+            });
+            self.addEventListener('activate', e => {
+                e.waitUntil(clients.claim());
+            });
+            self.addEventListener('fetch', e => {
+                e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+            });
+        `;
+        const swBlob = new Blob([swCode], { type: 'application/javascript' });
+        const swURL = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swURL).catch(() => {});
+    }
+
+    // 监听安装提示
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredPrompt = e;
+        showInstallBanner();
+    });
+
+    // iOS Safari 提示
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+        if (!window.navigator.standalone) {
+            setTimeout(showIosInstallTip, 2000);
+        }
+    }
+}
+
+function showInstallBanner() {
+    if (document.getElementById('installBanner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'installBanner';
+    banner.innerHTML = '<span>📲 安装到桌面，离线也能刷题</span><button id="installBtn">安装</button><button id="dismissInstall">✕</button>';
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:var(--primary);color:white;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:3000;font-size:14px;box-shadow:0 -2px 10px rgba(0,0,0,0.15)';
+    banner.querySelector('#installBtn').style.cssText = 'margin-left:auto;padding:6px 14px;border:none;border-radius:6px;background:white;color:var(--primary);font-weight:600;cursor:pointer';
+    banner.querySelector('#dismissInstall').style.cssText = 'background:none;border:none;color:white;font-size:16px;cursor:pointer;padding:4px';
+    document.body.appendChild(banner);
+    banner.querySelector('#installBtn').onclick = async () => {
+        if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+        banner.remove();
+    };
+    banner.querySelector('#dismissInstall').onclick = () => banner.remove();
+}
+
+function showIosInstallTip() {
+    if (document.getElementById('iosTip')) return;
+    const tip = document.createElement('div');
+    tip.id = 'iosTip';
+    tip.innerHTML = '<span>📲 iPhone 用户：点击 Safari 底部 <strong>分享</strong> 按钮 → 选择 <strong>添加到主屏幕</strong>，即可像 App 一样使用</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#64748b;font-size:16px;cursor:pointer">✕</button>';
+    tip.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;background:white;border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:10px;z-index:3000;font-size:13px;box-shadow:var(--shadow-lg);color:var(--text)';
+    document.body.appendChild(tip);
+}
+
+// Init
+async function init() {
+    try {
+        setupPWA();
+        await initDB();
+        await loadAll();
+        renderCollection();
+        setupTagListener();
+    } catch(err) {
+        console.error('初始化失败:', err);
+        document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif"><h2>⚠️ 初始化失败</h2><p>请刷新页面重试</p><p style="color:#666;font-size:12px">' + esc(err.message || '') + '</p></div>';
+    }
+}
+init();
+</script>
+</body>
+</html>
