@@ -83,7 +83,7 @@
         .q-card:hover { box-shadow: var(--shadow-lg); }
         .q-card.starred { border-left-color: var(--star); }
         .q-card .q-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .q-card .q-title { font-weight: 600; font-size: 14px; flex: 1; line-height: 1.5; }
+        .q-card .q-title { font-weight: 600; font-size: 14px; flex: 1; line-height: 1.5; white-space: pre-wrap; }
         .q-card .q-star { font-size: 20px; cursor: pointer; color: var(--border); transition: color 0.2s; margin-left: 8px; user-select: none; }
         .q-card .q-star.active { color: var(--star); }
         .q-card .q-meta { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -179,7 +179,7 @@
         .flashcard:hover { transform: scale(1.01); }
         .flashcard .fc-subject { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
         .flashcard .fc-type-badge { display: inline-block; font-size: 11px; margin-bottom: 12px; }
-        .flashcard .fc-question { font-size: 15px; line-height: 1.7; font-weight: 500; }
+        .flashcard .fc-question { font-size: 15px; line-height: 1.7; font-weight: 500; white-space: pre-wrap; }
         .flashcard .fc-options { margin-top: 16px; background: var(--bg); border-radius: 10px; padding: 12px 16px; font-size: 14px; line-height: 2; }
         .flashcard .fc-answer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; line-height: 1.7; color: var(--text-secondary); }
         .flashcard .fc-answer strong { color: var(--text); }
@@ -408,26 +408,16 @@
                 </div>
                 <div class="form-group">
                     <label>题目内容 *</label>
-                    <textarea id="fQuestion" placeholder="输入题目内容..." required></textarea>
+                    <textarea id="fQuestion" placeholder="输入题目内容，也可直接粘贴题目和选项..." required></textarea>
+                    <div class="form-hint">支持题目和选项一起粘贴，系统自动拆分选项到下方选项区。<br>格式：选项以 <b>A/B/C/D</b> + 分隔符（<code>.</code> <code>、</code> <code>)</code> <code>-</code> <code>]</code>）开头，大小写均可。多行或写在同一行都行，至少出现2个选项才自动识别。<br>示例：<code>以下哪个属于知觉特性？ A. 选择性 B. 整体性 C. 理解性 D. 恒常性</code></div>
                 </div>
 
                 <!-- 选项区（选择题专用） -->
                 <div id="optionsArea" style="display:none">
                     <div class="form-group">
                         <label>选项（选择题/多选题）</label>
-                        <div class="form-row-4">
-                            <div style="text-align:center;font-size:12px;color:var(--text-secondary)">A</div>
-                            <div style="text-align:center;font-size:12px;color:var(--text-secondary)">B</div>
-                            <div style="text-align:center;font-size:12px;color:var(--text-secondary)">C</div>
-                            <div style="text-align:center;font-size:12px;color:var(--text-secondary)">D</div>
-                        </div>
-                        <div class="form-row-4">
-                            <input type="text" id="optA" placeholder="选项A">
-                            <input type="text" id="optB" placeholder="选项B">
-                            <input type="text" id="optC" placeholder="选项C">
-                            <input type="text" id="optD" placeholder="选项D">
-                        </div>
-                        <div class="form-hint">在「正确答案」中填写正确选项字母，如 A 或 ACD（多选）</div>
+                        <textarea id="optText" placeholder="直接粘贴选项，如：&#10;A. 选择性&#10;B. 整体性&#10;C. 理解性&#10;D. 恒常性&#10;&#10;支持格式：&#10;· 多行：每行一个选项，以 A. / A、/ A) / A- 等开头（大小写均可）&#10;· 单行：A. xxx B. xxx C. xxx D. xxx 写在同一行&#10;· 管道符：用 | 分隔，如 选择性|整体性|理解性|恒常性&#10;&#10;如果选项已包含在题目图片中，此处留空即可" style="min-height:110px"></textarea>
+                        <div class="form-hint">自动识别 A/B/C/D 选项标记（大小写均可）。如果选项已包含在题目图片中，留空即可。在「正确答案」中填写正确选项字母，如 A 或 ACD（多选）</div>
                     </div>
                 </div>
 
@@ -453,6 +443,7 @@
                     </div>
                     <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
                     <div class="image-preview" id="imagePreview"></div>
+                    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal;margin-top:8px;font-size:13px"><input type="checkbox" id="fImageAsQuestion" onchange="toggleImageAsQuestion()"> 📷 此图片即为题目（不填题目内容，直接以图片作为题目）</label>
                 </div>
                 <div class="form-group" style="display:flex;gap:18px;flex-wrap:wrap">
                     <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal"><input type="checkbox" id="fStarred"> 收藏为好题</label>
@@ -484,9 +475,9 @@
             <div class="tab-content active" id="batchText">
                 <div class="import-format">
                     每行一道题，用 <code>||</code> 分隔字段<br>
-                    顺序：科目 || 题型(单选/多选/简答/论述) || 来源 || 难度(easy/medium/hard) || 题目 || 答案 || 选项(A|B|C|D) || 知识点 || 备注 || 标签(逗号分隔)<br>
-                    示例：<code>普通心理学||单选||2024真题||medium||以下哪个属于知觉特性？||A||选择性|整体性|理解性|恒常性|知觉特性,经常混淆</code><br>
-                    <span style="color:#7c3aed">选项格式：用 <code>|</code> 分隔ABCD，如 <code>A选项|B选项|C选项|D选项</code></span>
+                    顺序：科目 || 题型 || 来源 || 难度 || 题目 || 答案 || 选项 || 知识点 || 备注 || 标签<br>
+                    示例：<code>普通心理学||单选||2024真题||medium||以下哪个属于知觉特性？||A||选择性|整体性|理解性|恒常性|知觉特性</code><br>
+                    <span style="color:#7c3aed">选项支持两种格式：<br>1. 用 <code>|</code> 分隔：如 <code>选择性|整体性|理解性|恒常性</code><br>2. 直接粘贴多行：如 <code>A. 选择性 B. 整体性</code>（用空格或换行分隔）</span>
                 </div>
                 <textarea class="batch-area" id="batchTextArea" placeholder="粘贴题目内容，每行一道..."></textarea>
             </div>
@@ -612,6 +603,23 @@ function toggleOptionsVisibility() {
     document.getElementById('optionsArea').style.display = (t === '单选' || t === '多选') ? 'block' : 'none';
 }
 
+function toggleImageAsQuestion() {
+    const checked = document.getElementById('fImageAsQuestion').checked;
+    const qField = document.getElementById('fQuestion');
+    if (checked) {
+        if (!qField.dataset.originalValue) qField.dataset.originalValue = qField.value;
+        qField.dataset.originalRequired = qField.required;
+        qField.required = false;
+        qField.value = '[图片题目]';
+        qField.placeholder = '已设为图片题目，无需填写';
+    } else {
+        qField.required = qField.dataset.originalRequired !== 'false';
+        qField.value = qField.dataset.originalValue || '';
+        qField.placeholder = '输入题目内容...';
+        delete qField.dataset.originalValue;
+    }
+}
+
 // ========== Render Collection ==========
 function renderCollection() {
     try {
@@ -648,6 +656,7 @@ function renderCollection() {
 
 function cardHtml(q) {
     const color = SUBJECT_COLORS[q.subject] || 'var(--primary)';
+    const isImgQ = q.isImageQuestion || q.question === '[图片题目]';
     let optionsHtml = '';
     if (q.options && (q.type === '单选' || q.type === '多选')) {
         const opts = parseOptions(q.options);
@@ -658,10 +667,14 @@ function cardHtml(q) {
             return `<div class="opt ${isCorrect?'opt-correct':''}">${letter}. ${esc(o)}</div>`;
         }).join('')}</div>`;
     }
+    // 图片题目：优先展示图片
+    const titleHtml = isImgQ && q.images?.length
+        ? `<div class="q-title">📷 图片题目</div><div class="q-images" style="margin-bottom:8px">${q.images.map(i=>`<img src="${i}" onclick="showImg(this.src)">`).join('')}</div>`
+        : `<div class="q-title">${esc(q.question?.substring(0,150)||'无题目')}${q.question?.length>150?'...':''}</div>`;
     return `
     <div class="q-card ${q.starred?'starred':''}" style="border-left-color:${color}">
         <div class="q-header">
-            <div class="q-title">${esc(q.question?.substring(0,150)||'无题目')}${q.question?.length>150?'...':''}</div>
+            ${titleHtml}
             <span class="q-star ${q.starred?'active':''}" onclick="event.stopPropagation();toggleStar(${q.id})">${q.starred?'★':'☆'}</span>
         </div>
         <div class="q-meta">
@@ -679,7 +692,7 @@ function cardHtml(q) {
             ${q.answer?`<div><strong>答案：</strong>${esc(q.answer).replace(/\n/g,'<br>')}</div>`:''}
             ${q.note?`<div style="margin-top:6px"><strong>备注：</strong>${esc(q.note).replace(/\n/g,'<br>')}</div>`:''}
         </div>
-        ${q.images?.length?`<div class="q-images">${q.images.map(i=>`<img src="${i}" onclick="showImg(this.src)">`).join('')}</div>`:''}
+        ${!isImgQ && q.images?.length?`<div class="q-images">${q.images.map(i=>`<img src="${i}" onclick="showImg(this.src)">`).join('')}</div>`:''}
         ${q.tags?.length?`<div style="margin-bottom:8px">${q.tags.map(t=>`<span class="badge" style="background:var(--bg);color:var(--text-secondary)">${esc(t)}</span>`).join('')}</div>`:''}
         <div class="q-actions">
             ${!q.mastered?`<button class="btn btn-sm btn-success" onclick="markMastered(${q.id})">掌握</button>`:`<button class="btn btn-sm btn-secondary" onclick="unmarkMastered(${q.id})">取消掌握</button>`}
@@ -692,13 +705,104 @@ function cardHtml(q) {
 function parseOptions(optionsStr) {
     if (!optionsStr) return [];
     if (typeof optionsStr === 'object' && Array.isArray(optionsStr)) return optionsStr;
-    // 支持用 | 分隔
-    if (optionsStr.includes('|')) return optionsStr.split('|').map(s => s.trim()).filter(Boolean);
-    // 支持ABCD. 开头格式
-    if (/[A-D][.、]/.test(optionsStr)) {
-        return optionsStr.split(/(?=[A-D][.、])/).map(s => s.replace(/^[A-D][.、]/, '').trim()).filter(Boolean);
+    // 支持用 | 分隔的存储格式
+    if (optionsStr.includes('|') && !/[A-D][.、]/.test(optionsStr)) {
+        return optionsStr.split('|').map(s => s.trim()).filter(Boolean);
     }
+    // 支持 A. / A、/ A) / A] / A- 等多种格式（按行或连续文本）
+    const lines = optionsStr.split(/\n|(?=[A-D][.、)\]\-])/);
+    const opts = [];
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        // 匹配 A. xxx 或 A、xxx 或 A) xxx 或 A] xxx 或 A- xxx
+        const m = trimmed.match(/^[A-D][.\uff0e\u3001\)\]\-]?\s*(.+)$/);
+        if (m) {
+            opts.push(m[1].trim());
+        } else if (opts.length > 0) {
+            // 可能是上一行的续行
+            opts[opts.length - 1] += ' ' + trimmed;
+        }
+    }
+    if (opts.length > 0) return opts;
+    // 回退：按 | 分隔
+    if (optionsStr.includes('|')) return optionsStr.split('|').map(s => s.trim()).filter(Boolean);
     return [optionsStr];
+}
+
+function optionsToText(optionsArr) {
+    if (!optionsArr || !optionsArr.length) return '';
+    if (typeof optionsArr === 'string') return optionsArr;
+    return optionsArr.map((o, i) => 'ABCD'[i] + '. ' + o).join('\n');
+}
+
+// 从题目文本中自动提取选项（题目和选项一起粘贴时使用）
+// 支持多行格式和单行内联格式，大小写不敏感
+// 防冲突策略：A/B/C/D 必须紧跟分隔符(.、)等)，且至少出现2个连续选项才触发提取
+function extractOptionsFromQuestion(text) {
+    if (!text) return null;
+    // 选项标记正则：A-D 后必须紧跟分隔符，忽略大小写
+    const OPT_RE = /^([A-Da-d])[.\uff0e\u3001\uff0e\u3002\)\]\-]\s*(.+)$/;
+    const OPT_RE_INLINE = /([A-Da-d])[.\uff0e\u3001\uff0e\u3002\)\]\-]\s*/g;
+
+    // ── 多行模式 ──
+    const lines = text.split('\n');
+    const questionLines = [];
+    const options = [];
+    let foundOption = false;
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        const m = trimmed.match(OPT_RE);
+        if (m) {
+            foundOption = true;
+            const idx = 'ABCD'.indexOf(m[1].toUpperCase());
+            options[idx] = m[2].trim();
+        } else if (!foundOption) {
+            questionLines.push(line);
+        } else {
+            for (let i = 3; i >= 0; i--) {
+                if (options[i]) { options[i] += ' ' + trimmed; break; }
+            }
+        }
+    }
+    if (options.filter(Boolean).length >= 2) {
+        return { question: questionLines.join('\n').trim(), options: options.filter(Boolean) };
+    }
+
+    // ── 单行内联模式 ──
+    const allText = text.replace(/\n/g, ' ');
+    // 从文本中找出所有 A. B. C. D. 的位置
+    const allPositions = [];
+    let tmp;
+    while ((tmp = OPT_RE_INLINE.exec(allText)) !== null) {
+        allPositions.push({ letter: tmp[1].toUpperCase(), start: tmp.index, end: tmp.index + tmp[0].length });
+    }
+    if (allPositions.length >= 2) {
+        // 检查是否包含连续的 ABCD 序列（允许跳过，如只有 A B C 或 A C D）
+        const letters = allPositions.map(p => p.letter);
+        // 至少有2个不同字母且按字母顺序出现
+        const uniqueLetters = [...new Set(letters)];
+        if (uniqueLetters.length >= 2) {
+            // 从第一个选项位置切分题目和选项
+            const firstPos = allPositions[0];
+            const questionPart = allText.substring(0, firstPos.start).trim();
+            const inlineOptions = [];
+            for (let i = 0; i < allPositions.length; i++) {
+                const curr = allPositions[i];
+                const next = allPositions[i + 1];
+                const optStart = curr.end;
+                const optEnd = next ? next.start : allText.length;
+                const optText = allText.substring(optStart, optEnd).trim();
+                const idx = 'ABCD'.indexOf(curr.letter);
+                if (idx >= 0 && optText) inlineOptions[idx] = optText;
+            }
+            if (inlineOptions.filter(Boolean).length >= 2) {
+                return { question: questionPart, options: inlineOptions.filter(Boolean) };
+            }
+        }
+    }
+    return null;
 }
 
 function updateStats() {
@@ -743,6 +847,10 @@ function openAddModal() {
     document.getElementById('modalTitle').textContent='添加题目';
     document.getElementById('fDifficulty').value='medium';
     document.getElementById('optionsArea').style.display='none';
+    document.getElementById('optText').value='';
+    document.getElementById('fImageAsQuestion').checked=false;
+    delete document.getElementById('fQuestion').dataset.originalValue;
+    toggleImageAsQuestion();
     currentImages=[]; currentTags=[];
     renderTags(); renderImagePreview();
     showModal('qModal');
@@ -762,17 +870,17 @@ async function editQ(id) {
     document.getElementById('fStarred').checked=q.starred||false;
     document.getElementById('fIsError').checked=q.isError||false;
     document.getElementById('fNeedsReview').checked=q.needsReview||false;
+    // 图片作为题目
+    const isImgQ = q.question === '[图片题目]' || q.isImageQuestion;
+    delete document.getElementById('fQuestion').dataset.originalValue;
+    document.getElementById('fImageAsQuestion').checked = isImgQ;
+    toggleImageAsQuestion();
     // Options
     toggleOptionsVisibility();
     if (q.options && (q.type==='单选'||q.type==='多选')) {
-        const opts = parseOptions(q.options);
-        document.getElementById('optA').value = opts[0]||'';
-        document.getElementById('optB').value = opts[1]||'';
-        document.getElementById('optC').value = opts[2]||'';
-        document.getElementById('optD').value = opts[3]||'';
+        document.getElementById('optText').value = optionsToText(parseOptions(q.options));
     } else {
-        document.getElementById('optA').value='';document.getElementById('optB').value='';
-        document.getElementById('optC').value='';document.getElementById('optD').value='';
+        document.getElementById('optText').value='';
     }
     currentImages=q.images||[]; currentTags=q.tags||[];
     renderTags(); renderImagePreview();
@@ -815,12 +923,24 @@ document.getElementById('qForm').addEventListener('submit', async(e) => {
     e.preventDefault();
     const id = document.getElementById('qId').value;
     const type = document.getElementById('fType').value;
-    // Build options string
+    const isImageQ = document.getElementById('fImageAsQuestion').checked;
+    let questionText = document.getElementById('fQuestion').value;
+    // Build options string from textarea
     let options = '';
     if (type === '单选' || type === '多选') {
-        const a=document.getElementById('optA').value.trim(), b=document.getElementById('optB').value.trim();
-        const c=document.getElementById('optC').value.trim(), d=document.getElementById('optD').value.trim();
-        if (a||b||c||d) options = [a,b,c,d].join('|');
+        const optText = document.getElementById('optText').value.trim();
+        if (optText) {
+            // 优先使用选项区手动输入的内容
+            const parsed = parseOptions(optText);
+            if (parsed.length) options = parsed.join('|');
+        } else if (!isImageQ) {
+            // 选项区为空时，尝试从题目文本中自动提取
+            const extracted = extractOptionsFromQuestion(questionText);
+            if (extracted) {
+                questionText = extracted.question;
+                options = extracted.options.join('|');
+            }
+        }
     }
     const q = {
         subject: document.getElementById('fSubject').value,
@@ -828,10 +948,11 @@ document.getElementById('qForm').addEventListener('submit', async(e) => {
         source: document.getElementById('fSource').value,
         difficulty: document.getElementById('fDifficulty').value,
         knowledge: document.getElementById('fKnowledge').value.trim(),
-        question: document.getElementById('fQuestion').value,
+        question: isImageQ ? '[图片题目]' : questionText,
         answer: document.getElementById('fAnswer').value,
         note: document.getElementById('fNote').value,
         options: options,
+        isImageQuestion: isImageQ,
         starred: document.getElementById('fStarred').checked,
         isError: document.getElementById('fIsError').checked,
         needsReview: document.getElementById('fNeedsReview').checked,
@@ -956,20 +1077,20 @@ async function handleBatchImageImport(event) {
         const data = await compressImage(f, 1200, 0.7);
         await saveQ({
             subject:'', type:'简答', source:'', difficulty:'medium',
-            question:'[图片题目 - 请编辑补充内容]', answer:'', note:'',
+            question:'[图片题目]', answer:'', note:'',
             tags:[], options:'', knowledge:'', images:[data],
-            starred:false, isError:true, needsReview:true, mastered:false,
+            isImageQuestion:true, starred:false, isError:true, needsReview:true, mastered:false,
             createdAt:Date.now(), updatedAt:Date.now()
         });
         count++;
     }
     await loadAll(); renderCollection(); closeModal('batchModal');
-    toast(`已导入 ${count} 张图片，请编辑补充题目内容`);
+    toast(`已导入 ${count} 张图片题目`);
     event.target.value='';
 }
 
 function downloadTemplate() {
-    const csv='subject,type,source,difficulty,question,answer,options(A|B|C|D),knowledge,note,tags\n普通心理学,单选,2024真题,medium,以下属于知觉特性的是？,A,选择性|整体性|理解性|恒常性,知觉的特性,经常和感觉混淆,知觉;特性\n发展心理学,简答,2023真题,medium,皮亚杰认知发展阶段,感知运动阶段;前运算阶段;具体运算阶段;形式运算阶段,,皮亚杰;认知发展,需补充完整,认知发展;皮亚杰\n';
+    const csv='subject,type,source,difficulty,question,answer,options,knowledge,note,tags\n普通心理学,单选,2024真题,medium,以下属于知觉特性的是？,A,选择性|整体性|理解性|恒常性,知觉的特性,经常和感觉混淆,知觉;特性\n发展心理学,简答,2023真题,medium,皮亚杰认知发展阶段,感知运动阶段;前运算阶段;具体运算阶段;形式运算阶段,,皮亚杰;认知发展,需补充完整,认知发展;皮亚杰\n';
     const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
     const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='312导入模板.csv';a.click();
 }
@@ -1028,10 +1149,17 @@ function showQuizCard() {
     }
     if(quizIndex>=quizPool.length)quizIndex=0;
     const q=quizPool[quizIndex];
+    const isImgQ = q.isImageQuestion || q.question === '[图片题目]';
     document.getElementById('quizCurrent').textContent=quizIndex+1;
     document.getElementById('fcSubject').textContent=q.subject+(q.source?' · '+q.source:'');
     document.getElementById('fcType').innerHTML=`<span class="badge badge-type">${esc(TYPE_MAP[q.type]||q.type)}</span> ${q.difficulty?`<span class="badge badge-${q.difficulty}">${DIFF_MAP[q.difficulty]}</span>`:''} ${q.isError?'<span class="badge badge-review">错题</span>':''} ${q.mastered?'<span class="badge badge-mastered">已掌握</span>':''}`;
-    document.getElementById('fcQuestion').textContent=q.question;
+    // 图片题目：展示图片
+    const fcQ = document.getElementById('fcQuestion');
+    if (isImgQ && q.images?.length) {
+        fcQ.innerHTML = `<div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">📷 图片题目</div>${q.images.map(i=>`<img src="${i}" style="max-width:100%;border-radius:8px;margin-bottom:8px" onclick="event.stopPropagation();showImg('${i}')">`).join('')}`;
+    } else {
+        fcQ.textContent = q.question;
+    }
     // Options (show before reveal for selection questions)
     const fcOpt = document.getElementById('fcOptions');
     if (q.options && (q.type==='单选'||q.type==='多选')) {
@@ -1054,9 +1182,9 @@ function showQuizCard() {
     // Knowledge
     const fcK=document.getElementById('fcKnowledge');
     if(q.knowledge){fcK.style.display='block';fcK.innerHTML='📌 考点：'+esc(q.knowledge);}else{fcK.style.display='none';}
-    // Images
+    // Images（图片题目已在题目区展示，这里不重复展示）
     const fcImg=document.getElementById('fcImages');
-    if(q.images?.length){fcImg.style.display='grid';fcImg.innerHTML=q.images.map(i=>`<img src="${i}" onclick="event.stopPropagation();showImg('${i}')">`).join('');}else{fcImg.style.display='none';}
+    if(!isImgQ && q.images?.length){fcImg.style.display='grid';fcImg.innerHTML=q.images.map(i=>`<img src="${i}" onclick="event.stopPropagation();showImg('${i}')">`).join('');}else{fcImg.style.display='none';}
     // Note
     const fcNote=document.getElementById('fcNote');
     if(q.note){fcNote.style.display='block';fcNote.innerHTML='<strong>备注：</strong>'+esc(q.note).replace(/\n/g,'<br>');}else{fcNote.style.display='none';}
