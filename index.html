@@ -446,12 +446,12 @@
                     </div>
                     <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
                     <div class="image-preview" id="imagePreview"></div>
-                    <div style="text-align:center;margin-top:6px"><label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;user-select:none"><input type="checkbox" id="fImageAsQuestion" onchange="toggleImageAsQuestion()"> 📷 图片即题目</label></div>
+                    <div style="text-align:center;margin-top:6px"><span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;user-select:none"><input type="checkbox" id="fImageAsQuestion" onchange="toggleImageAsQuestion()"> 📷 图片即题目</span></div>
                 </div>
                 <div style="text-align:center;padding:6px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:8px 0">
-                    <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;margin:0 8px;user-select:none"><input type="checkbox" id="fStarred"> ⭐ 好题</label>
-                    <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;margin:0 8px;user-select:none"><input type="checkbox" id="fIsError"> ❌ 错题</label>
-                    <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;margin:0 8px;user-select:none"><input type="checkbox" id="fNeedsReview"> 📝 待复习</label>
+                    <span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;margin:0 8px;user-select:none"><input type="checkbox" id="fStarred"> ⭐ 好题</span>
+                    <span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;margin:0 8px;user-select:none"><input type="checkbox" id="fIsError"> ❌ 错题</span>
+                    <span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;margin:0 8px;user-select:none"><input type="checkbox" id="fNeedsReview"> 📝 待复习</span>
                 </div>
                 <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('qModal')">取消</button>
