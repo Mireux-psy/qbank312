@@ -105,16 +105,7 @@
         .q-card .q-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; margin-bottom: 8px; }
         .q-card .q-images img { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; cursor: pointer; transition: transform 0.2s; }
         .q-card .q-images img:hover { transform: scale(1.05); }
-        .q-card .q-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
-        .q-card .q-actions-menu { position: relative; }
-        .q-card .q-actions-toggle { width: 28px; height: 28px; border: none; background: var(--bg); border-radius: 6px; cursor: pointer; font-size: 16px; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
-        .q-card .q-actions-toggle:hover { background: var(--border); }
-        .q-card .q-actions-dropdown { display: none; position: absolute; bottom: 100%; right: 0; margin-bottom: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-lg); padding: 4px; z-index: 50; min-width: 120px; }
-        .q-card .q-actions-dropdown.show { display: block; }
-        .q-card .q-actions-dropdown button { display: flex; align-items: center; gap: 6px; width: 100%; padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 13px; color: var(--text); border-radius: 6px; white-space: nowrap; transition: background 0.15s; }
-        .q-card .q-actions-dropdown button:hover { background: var(--bg); }
-        .q-card .q-actions-dropdown button.danger { color: var(--danger); }
-        .q-card .q-actions-dropdown button.success { color: var(--success); }
+        .q-card .q-actions { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
 
         /* ===== Empty State ===== */
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
@@ -706,14 +697,9 @@ function cardHtml(q) {
         ${!isImgQ && q.images?.length?`<div class="q-images">${q.images.map(i=>`<img src="${i}" onclick="showImg(this.src)">`).join('')}</div>`:''}
         ${q.tags?.length?`<div style="margin-bottom:8px">${q.tags.map(t=>`<span class="badge" style="background:var(--bg);color:var(--text-secondary)">${esc(t)}</span>`).join('')}</div>`:''}
         <div class="q-actions">
-            <div class="q-actions-menu">
-                <button class="q-actions-toggle" onclick="event.stopPropagation();toggleActionsDropdown(this)" title="操作">&#8943;</button>
-                <div class="q-actions-dropdown">
-                    ${!q.mastered?`<button class="success" onclick="event.stopPropagation();markMastered(${q.id});closeAllDropdowns()">✓ 掌握</button>`:`<button onclick="event.stopPropagation();unmarkMastered(${q.id});closeAllDropdowns()">↩ 取消掌握</button>`}
-                    <button onclick="event.stopPropagation();editQ(${q.id});closeAllDropdowns()">✎ 编辑</button>
-                    <button class="danger" onclick="event.stopPropagation();confirmDel(${q.id});closeAllDropdowns()">✕ 删除</button>
-                </div>
-            </div>
+            ${!q.mastered?`<button class="btn btn-sm btn-success" onclick="markMastered(${q.id})">掌握</button>`:`<button class="btn btn-sm btn-secondary" onclick="unmarkMastered(${q.id})">取消掌握</button>`}
+            <button class="btn btn-sm btn-secondary" onclick="editQ(${q.id})">编辑</button>
+            <button class="btn btn-sm btn-danger" onclick="confirmDel(${q.id})">删除</button>
         </div>
     </div>`;
 }
@@ -905,18 +891,6 @@ async function editQ(id) {
     document.getElementById('modalTitle').textContent='编辑题目';
     showModal('qModal');
 }
-
-// ========== Actions Dropdown ==========
-function toggleActionsDropdown(btn) {
-    const dd = btn.nextElementSibling;
-    const wasOpen = dd.classList.contains('show');
-    closeAllDropdowns();
-    if (!wasOpen) dd.classList.add('show');
-}
-function closeAllDropdowns() {
-    document.querySelectorAll('.q-actions-dropdown.show').forEach(d => d.classList.remove('show'));
-}
-document.addEventListener('click', closeAllDropdowns);
 
 async function confirmDel(id) {
     if(!confirm('确定删除？')) return;
