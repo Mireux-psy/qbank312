@@ -1198,14 +1198,6 @@ function showQuizCard() {
     // Answer
     document.getElementById('fcAnswer').style.display='none';
     let ansHtml = q.answer ? `<strong>答案：</strong>${esc(q.answer).replace(/\n/g,'<br>')}` : '暂无答案';
-    // After reveal, show correct options highlighted
-    if (q.options && (q.type==='单选'||q.type==='多选')) {
-        const opts = parseOptions(q.options);
-        const correctLetters = (q.answer||'').trim().toUpperCase().split('').filter(c=>'ABCD'.includes(c));
-        ansHtml += '<div style="margin-top:8px">' + opts.map((o,i)=>{
-            const l='ABCD'[i]; return `<div style="${correctLetters.includes(l)?'color:var(--success);font-weight:600':''}">${l}. ${esc(o)}</div>`;
-        }).join('') + '</div>';
-    }
     document.getElementById('fcAnswer').innerHTML=ansHtml;
     // Knowledge
     const fcK=document.getElementById('fcKnowledge');
