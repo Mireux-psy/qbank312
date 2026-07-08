@@ -1291,9 +1291,19 @@ function openQuizPicker() {
     else {
         list.innerHTML = quizPool.map((q,i) => {
             const isCurrent = i === quizIndex;
-            const title = (q.question || '').replace(/\n/g, ' ').substring(0, 40) || (q.isImageQuestion ? '[图片题目]' : '无标题');
+            const isImgQ = q.isImageQuestion || q.question === '[图片题目]';
+            let title, thumbHtml = '';
+            if (isImgQ) {
+                const info = [q.knowledge ? `考点：${q.knowledge}` : '', q.answer ? `答案：${q.answer.replace(/\n/g,' ')}` : ''].filter(Boolean).join(' | ');
+                title = info || '[图片题目]';
+                if (q.images?.length) {
+                    thumbHtml = `<img src="${q.images[0]}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;flex-shrink:0;border:1px solid var(--border)">`;
+                }
+            } else {
+                title = (q.question || '').replace(/\n/g, ' ').substring(0, 40) || '无标题';
+            }
             const meta = `${esc(q.subject||'')} · ${esc(TYPE_MAP[q.type]||q.type||'')} ${q.isError?'· 错题':''} ${q.mastered?'· 已掌握':''}`;
-            return `<div class="quiz-picker-item ${isCurrent?'current':''}" onclick="jumpToQuiz(${i})"><div class="quiz-picker-num">${i+1}</div><div class="quiz-picker-info"><div class="quiz-picker-title">${esc(title)}</div><div class="quiz-picker-meta">${meta}</div></div></div>`;
+            return `<div class="quiz-picker-item ${isCurrent?'current':''}" onclick="jumpToQuiz(${i})"><div class="quiz-picker-num">${i+1}</div>${thumbHtml}<div class="quiz-picker-info"><div class="quiz-picker-title">${esc(title)}</div><div class="quiz-picker-meta">${meta}</div></div></div>`;
         }).join('');
     }
     document.getElementById('quizPicker').classList.add('show');
