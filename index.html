@@ -435,6 +435,14 @@
                     <label>题目内容 *</label>
                     <textarea id="fQuestion" placeholder="输入题目内容，也可直接粘贴题目和选项..." required></textarea>
                     <div class="form-hint">支持题目和选项一起粘贴，系统自动拆分选项到下方选项区。<br>格式：选项以 <b>A/B/C/D</b> + 分隔符（<code>.</code> <code>、</code> <code>)</code> <code>-</code> <code>]</code>）开头，大小写均可。多行或写在同一行都行，至少出现2个选项才自动识别。<br>示例：<code>以下哪个属于知觉特性？ A. 选择性 B. 整体性 C. 理解性 D. 恒常性</code></div>
+                    <!-- 题目图片 -->
+                    <div class="image-upload" id="imageUpload" onclick="document.getElementById('imageInput').click()" style="margin-top:8px">
+                        <div>📷 点击上传或拖拽题目图片到此处</div>
+                        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">支持 JPG、PNG（单个图片建议 &lt;2MB）</div>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
+                    <div class="image-preview" id="imagePreview"></div>
+                    <div style="text-align:center;margin-top:6px"><span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;user-select:none"><input type="checkbox" id="fImageAsQuestion" onchange="toggleImageAsQuestion()"> 📷 图片即题目</span></div>
                 </div>
 
                 <!-- 选项区（选择题专用） -->
@@ -465,16 +473,6 @@
                     <div class="tag-input" id="tagInput" onclick="document.getElementById('tagInputField').focus()">
                         <input type="text" id="tagInputField" placeholder="输入标签按回车添加">
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>图片</label>
-                    <div class="image-upload" id="imageUpload" onclick="document.getElementById('imageInput').click()">
-                        <div>📷 点击上传或拖拽图片到此处</div>
-                        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">支持 JPG、PNG（单个图片建议 &lt;2MB）</div>
-                    </div>
-                    <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
-                    <div class="image-preview" id="imagePreview"></div>
-                    <div style="text-align:center;margin-top:6px"><span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;user-select:none"><input type="checkbox" id="fImageAsQuestion" onchange="toggleImageAsQuestion()"> 📷 图片即题目</span></div>
                 </div>
                 <div style="text-align:center;padding:6px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:8px 0">
                     <span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;margin:0 8px;user-select:none"><input type="checkbox" id="fStarred"> ⭐ 好题</span>
