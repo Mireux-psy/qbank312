@@ -449,6 +449,12 @@
                 <div class="form-group">
                     <label>正确答案 / 解析</label>
                     <textarea id="fAnswer" placeholder="选择题填写正确选项字母（如A、ABD）；其他题型填写完整答案和解析..."></textarea>
+                    <div class="image-preview" id="answerImagePreview" style="margin-top:8px"></div>
+                    <div style="margin-top:6px;text-align:center">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('answerImageUpload').click()">📷 上传答案图片</button>
+                        <input type="file" id="answerImageUpload" accept="image/*" multiple style="display:none" onchange="handleAnswerImage(this.files)">
+                        <span style="font-size:11px;color:var(--text-secondary);margin-left:6px">支持拍照上传答案解析图片</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>错误原因 / 考点备注</label>
@@ -552,7 +558,7 @@ const SUBJECT_COLORS = {
 // ========== DB ==========
 const DB_NAME = 'QBank312';
 const STORE = 'questions';
-let db = null, questions = [], currentImages = [], currentTags = [];
+let db = null, questions = [], currentImages = [], currentAnswerImages = [], currentTags = [];
 
 function initDB() {
     return new Promise((resolve, reject) => {
@@ -876,7 +882,7 @@ function openAddModal() {
     document.getElementById('fImageAsQuestion').checked=false;
     delete document.getElementById('fQuestion').dataset.originalValue;
     toggleImageAsQuestion();
-    currentImages=[]; currentTags=[];
+    currentImages=[]; currentAnswerImages=[]; currentTags=[];
     renderTags(); renderImagePreview();
     showModal('qModal');
 }
@@ -909,8 +915,8 @@ async function editQ(id) {
     } else {
         document.getElementById('optText').value='';
     }
-    currentImages=q.images||[]; currentTags=q.tags||[];
-    renderTags(); renderImagePreview();
+    currentImages=q.images||[]; currentAnswerImages=q.answerImages||[]; currentTags=q.tags||[];
+    renderTags(); renderImagePreview(); renderAnswerImagePreview();
     document.getElementById('modalTitle').textContent='编辑题目';
     showModal('qModal');
 }
@@ -983,7 +989,7 @@ document.getElementById('qForm').addEventListener('submit', async(e) => {
         starred: document.getElementById('fStarred').checked,
         isError: document.getElementById('fIsError').checked,
         needsReview: document.getElementById('fNeedsReview').checked,
-        tags: [...currentTags], images: [...currentImages],
+        tags: [...currentTags], images: [...currentImages], answerImages: [...currentAnswerImages],
         updatedAt: Date.now()
     };
     if (id) { q.id=parseInt(id); } else { q.createdAt=Date.now(); q.mastered=false; }
@@ -1033,6 +1039,13 @@ function renderImagePreview() {
     document.getElementById('imagePreview').innerHTML = currentImages.map((img,i)=>`<div class="img-wrap"><img src="${img}"><button class="remove-img" onclick="removeImage(${i})">&times;</button></div>`).join('');
 }
 function removeImage(i) { currentImages.splice(i,1); renderImagePreview(); }
+function handleAnswerImage(files) {
+    Array.from(files).forEach(f => { compressImage(f, 1200, 0.7).then(data => { currentAnswerImages.push(data); renderAnswerImagePreview(); }); });
+}
+function renderAnswerImagePreview() {
+    document.getElementById('answerImagePreview').innerHTML = currentAnswerImages.map((img,i)=>`<div class="img-wrap"><img src="${img}"><button class="remove-img" onclick="removeAnswerImage(${i})">&times;</button></div>`).join('');
+}
+function removeAnswerImage(i) { currentAnswerImages.splice(i,1); renderAnswerImagePreview(); }
 function showImg(src) { document.getElementById('previewImage').src=src; showModal('imageModal'); }
 
 const ua = document.getElementById('imageUpload');
@@ -1197,7 +1210,11 @@ function showQuizCard() {
     } else { fcOpt.style.display='none'; }
     // Answer
     document.getElementById('fcAnswer').style.display='none';
-    let ansHtml = q.answer ? `<strong>答案：</strong>${esc(q.answer).replace(/\n/g,'<br>')}` : '暂无答案';
+    let ansHtml = q.answer ? `<strong>答案：</strong>${esc(q.answer).replace(/\n/g,'<br>')}` : '';
+    if (q.answerImages?.length) {
+        ansHtml += `<div class="q-images" style="margin-top:8px">${q.answerImages.map(i=>`<img src="${i}" style="max-width:100%;border-radius:6px;margin-bottom:6px" onclick="event.stopPropagation();showImg('${i}')">`).join('')}</div>`;
+    }
+    if (!ansHtml) ansHtml = '暂无答案';
     document.getElementById('fcAnswer').innerHTML=ansHtml;
     // Knowledge
     const fcK=document.getElementById('fcKnowledge');
