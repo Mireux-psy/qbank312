@@ -436,12 +436,12 @@
                     <textarea id="fQuestion" placeholder="输入题目内容，也可直接粘贴题目和选项..." required></textarea>
                     <div class="form-hint">支持题目和选项一起粘贴，系统自动拆分选项到下方选项区。<br>格式：选项以 <b>A/B/C/D</b> + 分隔符（<code>.</code> <code>、</code> <code>)</code> <code>-</code> <code>]</code>）开头，大小写均可。多行或写在同一行都行，至少出现2个选项才自动识别。<br>示例：<code>以下哪个属于知觉特性？ A. 选择性 B. 整体性 C. 理解性 D. 恒常性</code></div>
                     <!-- 题目图片 -->
-                    <div class="image-upload" id="imageUpload" onclick="document.getElementById('imageInput').click()" style="margin-top:8px">
-                        <div>📷 点击上传或拖拽题目图片到此处</div>
-                        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">支持 JPG、PNG（单个图片建议 &lt;2MB）</div>
+                    <div class="image-preview" id="imagePreview" style="margin-top:8px"></div>
+                    <div style="margin-top:6px;text-align:center">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('imageInput').click()">📷 上传题目图片</button>
+                        <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
+                        <span style="font-size:11px;color:var(--text-secondary);margin-left:6px">支持拖拽或拍照上传</span>
                     </div>
-                    <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
-                    <div class="image-preview" id="imagePreview"></div>
                     <div style="text-align:center;margin-top:6px"><span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;font-weight:normal;user-select:none"><input type="checkbox" id="fImageAsQuestion" onchange="toggleImageAsQuestion()"> 📷 图片即题目</span></div>
                 </div>
 
@@ -1046,10 +1046,12 @@ function renderAnswerImagePreview() {
 function removeAnswerImage(i) { currentAnswerImages.splice(i,1); renderAnswerImagePreview(); }
 function showImg(src) { document.getElementById('previewImage').src=src; showModal('imageModal'); }
 
-const ua = document.getElementById('imageUpload');
-ua.addEventListener('dragover',(e)=>{e.preventDefault();ua.classList.add('dragover');});
-ua.addEventListener('dragleave',()=>ua.classList.remove('dragover'));
-ua.addEventListener('drop',(e)=>{e.preventDefault();ua.classList.remove('dragover');Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')).forEach(f=>{compressImage(f,1200,0.7).then(data=>{currentImages.push(data);renderImagePreview();});});});
+// Drag & drop for question images (bind to preview area)
+const imgPreview = document.getElementById('imagePreview');
+['dragenter','dragover','dragleave','drop'].forEach(evt=>imgPreview.addEventListener(evt,(e)=>{e.preventDefault();e.stopPropagation();}));
+imgPreview.addEventListener('dragenter',()=>imgPreview.style.background='var(--bg)');
+imgPreview.addEventListener('dragleave',()=>imgPreview.style.background='');
+imgPreview.addEventListener('drop',(e)=>{imgPreview.style.background='';Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')).forEach(f=>{compressImage(f,1200,0.7).then(data=>{currentImages.push(data);renderImagePreview();});});});
 
 // ========== Batch Import ==========
 function switchTab(tab, id) {
