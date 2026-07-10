@@ -719,6 +719,7 @@ function cardHtml(q) {
         ${optionsHtml}
         <div class="q-body">
             ${q.answer?`<div><strong>答案：</strong>${esc(q.answer).replace(/\n/g,'<br>')}</div>`:''}
+            ${q.answerImages?.length?`<div class="q-images" style="margin-top:6px">${q.answerImages.map(i=>`<img src="${i}" onclick="showImg(this.src)">`).join('')}</div>`:''}
             ${q.note?`<div style="margin-top:6px"><strong>备注：</strong>${esc(q.note).replace(/\n/g,'<br>')}</div>`:''}
         </div>
         ${!isImgQ && q.images?.length?`<div class="q-images">${q.images.map(i=>`<img src="${i}" onclick="showImg(this.src)">`).join('')}</div>`:''}
